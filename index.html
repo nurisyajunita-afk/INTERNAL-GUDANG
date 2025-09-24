@@ -90,7 +90,7 @@
 
 
 
-            <div class="mt-4 text-center">
+            <div class="mt-6 text-center">
                 <p class="text-xs text-gray-500">
                     © 2024 Gudang Central. Sistem Manajemen Inventory.
                 </p>
@@ -195,7 +195,7 @@
                 </div>
 
                 <!-- ========== TOMBOL NAVIGASI ========== -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     <button onclick="showSection('inventory')" class="bg-white rounded-xl shadow-md p-6 card-hover fade-in text-left group">
                         <div class="flex items-center space-x-4">
                             <div class="bg-blue-100 p-3 rounded-full group-hover:bg-blue-200 transition-colors">
@@ -207,6 +207,23 @@
                                 <h3 class="text-lg font-semibold text-gray-900">Kelola Inventory</h3>
                                 <p class="text-sm text-gray-600">Lihat dan kelola stok barang</p>
                             </div>
+                        </div>
+                    </button>
+
+                    <button onclick="showSection('requests')" class="bg-white rounded-xl shadow-md p-6 card-hover fade-in text-left group relative">
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-orange-100 p-3 rounded-full group-hover:bg-orange-200 transition-colors">
+                                <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">Permintaan Barang</h3>
+                                <p class="text-sm text-gray-600">Sistem otorisasi 3 tingkat</p>
+                            </div>
+                        </div>
+                        <div class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                            NEW!
                         </div>
                     </button>
 
@@ -246,25 +263,63 @@
                     <div id="inventory" class="section">
                         <div class="flex justify-between items-center mb-6">
                             <h2 class="text-2xl font-bold text-gray-900">📦 Inventory Barang</h2>
-                            <button onclick="showAddItemForm()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                            <button id="addItemBtn" onclick="showAddItemForm()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
                                 + Tambah Barang
                             </button>
                         </div>
 
-                        <div class="mb-4">
+                        <div class="mb-6 space-y-4">
                             <input type="text" id="searchInventory" placeholder="🔍 Cari barang..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            
+                            <div class="flex flex-wrap gap-4 items-center">
+                                <select id="filterType" onchange="applyInventoryFilters()" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Semua Tipe</option>
+                                    <option value="capex">💰 CAPEX (Aset)</option>
+                                    <option value="opex">🔄 OPEX (Operasional)</option>
+                                </select>
+                                
+                                <select id="filterMovement" onchange="applyInventoryFilters()" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Semua Pergerakan</option>
+                                    <option value="fast">🚀 Fast Moving</option>
+                                    <option value="normal">📊 Normal Moving</option>
+                                    <option value="slow">🐌 Slow Moving</option>
+                                </select>
+                                
+                                <select id="filterCategory" onchange="applyInventoryFilters()" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Semua Kategori</option>
+                                    <option value="Elektronik">Elektronik</option>
+                                    <option value="Furniture">Furniture</option>
+                                    <option value="Alat Tulis">Alat Tulis</option>
+                                    <option value="Cleaning">Cleaning</option>
+                                    <option value="Security">Security</option>
+                                    <option value="Engineering">Engineering</option>
+                                </select>
+                                
+                                <select id="filterStock" onchange="applyInventoryFilters()" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Semua Stok</option>
+                                    <option value="low">⚠️ Stok Rendah</option>
+                                    <option value="normal">✅ Stok Normal</option>
+                                </select>
+                                
+                                <button onclick="resetInventoryFilters()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
+                                    🔄 Reset Filter
+                                </button>
+                            </div>
                         </div>
 
                         <div class="overflow-x-auto">
                             <table class="w-full table-auto">
                                 <thead class="bg-gray-50">
                                     <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kode</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Barang</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stok</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kode</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Barang</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipe</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pergerakan</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stok</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Min. Stok</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody id="inventoryTable" class="bg-white divide-y divide-gray-200">
@@ -337,6 +392,42 @@
                                     </tbody>
                                 </table>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- ========== SECTION PERMINTAAN BARANG ========== -->
+                    <div id="requests" class="section hidden">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-2xl font-bold text-gray-900">📋 Permintaan Barang</h2>
+                            <button onclick="showNewRequestForm()" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                + Buat Permintaan Baru
+                            </button>
+                        </div>
+
+                        <!-- Filter Status -->
+                        <div class="mb-6">
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="filterRequests('all')" class="filter-btn active bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                    Semua
+                                </button>
+                                <button onclick="filterRequests('pending')" class="filter-btn bg-gray-100 text-gray-700 hover:bg-gray-200 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                    ⏳ Menunggu Staff
+                                </button>
+                                <button onclick="filterRequests('staff_approved')" class="filter-btn bg-gray-100 text-gray-700 hover:bg-gray-200 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                    ⏳ Menunggu Manager
+                                </button>
+                                <button onclick="filterRequests('approved')" class="filter-btn bg-gray-100 text-gray-700 hover:bg-gray-200 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                    ✅ Disetujui
+                                </button>
+                                <button onclick="filterRequests('rejected')" class="filter-btn bg-gray-100 text-gray-700 hover:bg-gray-200 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                    ❌ Ditolak
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Daftar Permintaan -->
+                        <div id="requestsList" class="space-y-4">
+                            <!-- Data akan diisi oleh JavaScript -->
                         </div>
                     </div>
 
@@ -433,9 +524,18 @@
                     <option value="Elektronik">Elektronik</option>
                     <option value="Furniture">Furniture</option>
                     <option value="Alat Tulis">Alat Tulis</option>
+                    <option value="Cleaning">Cleaning</option>
+                    <option value="Security">Security</option>
+                    <option value="Engineering">Engineering</option>
                     <option value="Lainnya">Lainnya</option>
                 </select>
+                <select id="newItemType" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                    <option value="">Pilih Tipe Barang</option>
+                    <option value="capex">💰 CAPEX (Aset/Tahan Lama)</option>
+                    <option value="opex">🔄 OPEX (Operasional/Cepat Habis)</option>
+                </select>
                 <input type="number" id="newItemStock" placeholder="Stok Awal" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                <input type="number" id="newItemMinStock" placeholder="Stok Minimum" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
                 <div class="flex space-x-3">
                     <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-medium transition-colors">
                         Tambah
@@ -447,6 +547,93 @@
             </form>
         </div>
     </div>
+
+    <!-- ========== MODAL PERMINTAAN BARU ========== -->
+    <div id="newRequestModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <h3 class="text-xl font-bold text-gray-900 mb-6">📋 Buat Permintaan Barang Baru</h3>
+            <form onsubmit="submitNewRequest(event)" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Nama Pemohon</label>
+                        <input type="text" id="requesterName" placeholder="Nama lengkap" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Divisi</label>
+                        <select id="requesterDivision" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500" required>
+                            <option value="">Pilih Divisi</option>
+                            <option value="Housekeeping">🧹 Housekeeping</option>
+                            <option value="Security">🛡️ Security</option>
+                            <option value="Back Office">💼 Back Office</option>
+                            <option value="Engineering">🔧 Engineering</option>
+                            <option value="HR">👥 HR</option>
+                            <option value="Finance">💰 Finance</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Barang</label>
+                    <select id="requestItemCode" onchange="updateItemInfo()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500" required>
+                        <option value="">Pilih Barang</option>
+                    </select>
+                </div>
+
+                <!-- Info Barang -->
+                <div id="itemInfo" class="hidden bg-blue-50 rounded-lg p-4">
+                    <h4 class="font-medium text-blue-900 mb-3">📦 Informasi Barang</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                        <div>
+                            <span class="text-gray-600">Nama:</span>
+                            <p class="font-medium" id="selectedItemName">-</p>
+                        </div>
+                        <div>
+                            <span class="text-gray-600">Kategori:</span>
+                            <p class="font-medium" id="selectedItemCategory">-</p>
+                        </div>
+                        <div>
+                            <span class="text-gray-600">Stok Tersedia:</span>
+                            <p class="font-bold text-blue-600"><span id="selectedItemStock">0</span> unit<span id="selectedItemStatus" class="font-medium ml-2"></span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Jumlah Diminta</label>
+                        <input type="number" id="requestQuantity" min="1" placeholder="Jumlah" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500" required>
+                        <div id="stockWarning" class="hidden mt-2 p-2 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
+                            ⚠️ Jumlah permintaan melebihi stok yang tersedia!
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Prioritas</label>
+                        <select id="requestPriority" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500" required>
+                            <option value="normal">🟢 Normal</option>
+                            <option value="urgent">🟡 Mendesak</option>
+                            <option value="critical">🔴 Kritis</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Keperluan/Tujuan Penggunaan</label>
+                    <textarea id="requestPurpose" placeholder="Jelaskan untuk apa barang ini digunakan..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 h-24 resize-none" required></textarea>
+                </div>
+
+                <div class="flex space-x-3">
+                    <button type="submit" id="submitRequestBtn" class="flex-1 bg-orange-600 hover:bg-orange-700 text-white py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                        📋 Kirim Permintaan
+                    </button>
+                    <button type="button" onclick="hideNewRequestForm()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-3 rounded-lg font-medium transition-colors">
+                        Batal
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
 
     <!-- ========== MODAL IMPORT DATABASE ========== -->
     <div id="importModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
@@ -473,8 +660,53 @@
     <script>
         // ========== LOGIN SYSTEM ==========
         const VALID_CREDENTIALS = {
-            username: 'ga_warehouse',
-            password: 'warehouse_epa001'
+            // Warehouse Staff - Full Access
+            'ga_warehouse': {
+                password: 'ga_warehouse_epa001',
+                role: 'warehouse',
+                name: 'Staff Warehouse',
+                permissions: ['view_all', 'edit_inventory', 'manage_transactions', 'approve_staff', 'manage_reports']
+            },
+            
+            // Building Manager - Approval Authority
+            'building_manager': {
+                password: 'manager_epa001',
+                role: 'manager',
+                name: 'Building Manager',
+                permissions: ['view_all', 'approve_manager', 'view_reports', 'final_approval']
+            },
+            
+            // Security Division
+            'security_user': {
+                password: 'security_epa001',
+                role: 'security',
+                name: 'Security Division',
+                permissions: ['view_inventory', 'create_request']
+            },
+            
+            // Engineering Division
+            'engineering_user': {
+                password: 'engineering_epa001',
+                role: 'engineering',
+                name: 'Engineering Division',
+                permissions: ['view_inventory', 'create_request']
+            },
+            
+            // Housekeeping Division
+            'housekeeping_user': {
+                password: 'housekeeping_epa001',
+                role: 'housekeeping',
+                name: 'Housekeeping Division',
+                permissions: ['view_inventory', 'create_request']
+            },
+            
+            // Back Office Division
+            'backoffice_user': {
+                password: 'backoffice_epa001',
+                role: 'backoffice',
+                name: 'Back Office Division',
+                permissions: ['view_inventory', 'create_request']
+            }
         };
 
         function handleLogin(event) {
@@ -486,17 +718,21 @@
             const loginForm = event.target;
             
             // Validate credentials
-            if (username === VALID_CREDENTIALS.username && password === VALID_CREDENTIALS.password) {
+            const user = VALID_CREDENTIALS[username];
+            if (user && user.password === password) {
                 // Success - hide login screen and show main app
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('mainApp').classList.remove('hidden');
                 
-                // Initialize the main application
-                initializeApp();
-                
-                // Store login status
+                // Store login status with user info
                 sessionStorage.setItem('isLoggedIn', 'true');
                 sessionStorage.setItem('username', username);
+                sessionStorage.setItem('userRole', user.role);
+                sessionStorage.setItem('userName', user.name);
+                sessionStorage.setItem('userPermissions', JSON.stringify(user.permissions));
+                
+                // Initialize the main application
+                initializeApp();
                 
             } else {
                 // Error - show error message and shake form
@@ -573,21 +809,17 @@
                 if (!localStorage.getItem(this.dbName)) {
                     const initialData = {
                         inventory: [
-                            { code: 'LT001', name: 'Laptop Dell XPS 13', category: 'Elektronik', stock: 15, minStock: 5 },
-                            { code: 'MS002', name: 'Mouse Wireless Logitech', category: 'Elektronik', stock: 45, minStock: 10 },
-                            { code: 'KB003', name: 'Keyboard Mechanical', category: 'Elektronik', stock: 3, minStock: 5 },
-                            { code: 'CH004', name: 'Kursi Kantor Ergonomis', category: 'Furniture', stock: 8, minStock: 3 },
-                            { code: 'PN005', name: 'Pulpen Pilot', category: 'Alat Tulis', stock: 120, minStock: 50 },
-                            { code: 'CL006', name: 'Pembersih Lantai', category: 'Cleaning', stock: 25, minStock: 10 },
-                            { code: 'SC007', name: 'Walkie Talkie', category: 'Security', stock: 8, minStock: 2 },
-                            { code: 'PR008', name: 'Printer Canon', category: 'Elektronik', stock: 5, minStock: 2 },
-                            { code: 'TL009', name: 'Tool Set', category: 'Engineering', stock: 12, minStock: 3 }
+                            { code: 'ELK001', name: 'Laptop Dell Inspiron', category: 'Elektronik', type: 'capex', stock: 15, minStock: 5, movement: 'normal', totalOut: 0, lastOut: null },
+                            { code: 'ELK002', name: 'Mouse Wireless Logitech', category: 'Elektronik', type: 'opex', stock: 45, minStock: 10, movement: 'fast', totalOut: 25, lastOut: '2024-12-20' },
+                            { code: 'ATK001', name: 'Kertas A4 80gsm', category: 'Alat Tulis', type: 'opex', stock: 120, minStock: 20, movement: 'fast', totalOut: 80, lastOut: '2024-12-21' },
+                            { code: 'ATK002', name: 'Pulpen Pilot', category: 'Alat Tulis', type: 'opex', stock: 8, minStock: 15, movement: 'normal', totalOut: 12, lastOut: '2024-12-18' },
+                            { code: 'FUR001', name: 'Kursi Kantor Ergonomis', category: 'Furniture', type: 'capex', stock: 25, minStock: 5, movement: 'slow', totalOut: 3, lastOut: '2024-11-15' },
+                            { code: 'CLN001', name: 'Sabun Cuci Tangan', category: 'Cleaning', type: 'opex', stock: 35, minStock: 10, movement: 'normal', totalOut: 18, lastOut: '2024-12-19' },
+                            { code: 'SEC001', name: 'Kamera CCTV Indoor', category: 'Security', type: 'capex', stock: 12, minStock: 3, movement: 'slow', totalOut: 2, lastOut: '2024-10-20' },
+                            { code: 'ENG001', name: 'Obeng Set Phillips', category: 'Engineering', type: 'capex', stock: 18, minStock: 5, movement: 'normal', totalOut: 7, lastOut: '2024-12-10' }
                         ],
-                        transactions: [
-                            { time: '10:30', type: 'Masuk', code: 'LT001', qty: 5, note: 'Dari Supplier ABC', date: new Date().toISOString().split('T')[0], division: '-', requestedBy: '-', purpose: '-' },
-                            { time: '11:15', type: 'Keluar', code: 'MS002', qty: 10, note: 'Untuk keperluan kantor', date: new Date().toISOString().split('T')[0], division: 'Back Office', requestedBy: 'Budi Santoso', purpose: 'Upgrade workstation karyawan' },
-                            { time: '14:20', type: 'Masuk', code: 'KB003', qty: 15, note: 'Dari Supplier XYZ', date: new Date().toISOString().split('T')[0], division: '-', requestedBy: '-', purpose: '-' }
-                        ],
+                        transactions: [],
+                        itemRequests: [],
                         settings: {
                             lastBackup: new Date().toISOString(),
                             version: '1.0'
@@ -634,6 +866,19 @@
                 this.saveData(data);
             }
 
+            // Ambil permintaan barang
+            getItemRequests() {
+                const data = this.getData();
+                return data ? data.itemRequests : [];
+            }
+
+            // Simpan permintaan barang
+            saveItemRequests(requests) {
+                const data = this.getData();
+                data.itemRequests = requests;
+                this.saveData(data);
+            }
+
             // Tambah transaksi baru
             addTransaction(transaction) {
                 const transactions = this.getTransactions();
@@ -675,27 +920,72 @@
         }
 
         // Global variables
-        let db, inventory, transactions;
+        let db, inventory, transactions, itemRequests, currentUser, userPermissions;
+
+        // ========== PERMISSION SYSTEM ==========
+        function hasPermission(permission) {
+            return userPermissions && userPermissions.includes(permission);
+        }
+
+        function getCurrentUserRole() {
+            return sessionStorage.getItem('userRole');
+        }
+
+        function getCurrentUserName() {
+            return sessionStorage.getItem('userName');
+        }
+
+        function isWarehouseStaff() {
+            return getCurrentUserRole() === 'warehouse';
+        }
+
+        function isBuildingManager() {
+            return getCurrentUserRole() === 'manager';
+        }
+
+        function isDivisionUser() {
+            const role = getCurrentUserRole();
+            return ['security', 'engineering', 'housekeeping', 'backoffice'].includes(role);
+        }
 
         // ========== INISIALISASI APLIKASI ==========
         function initializeApp() {
+            // Load user permissions
+            userPermissions = JSON.parse(sessionStorage.getItem('userPermissions') || '[]');
+            currentUser = {
+                username: sessionStorage.getItem('username'),
+                role: sessionStorage.getItem('userRole'),
+                name: sessionStorage.getItem('userName'),
+                permissions: userPermissions
+            };
+
+            // Update header with user info
+            document.getElementById('loggedInUser').textContent = `${currentUser.name} (${currentUser.role.toUpperCase()})`;
+            
             // Inisialisasi database
             db = new WarehouseDB();
             
             // Load data dari database
             inventory = db.getInventory();
             transactions = db.getTransactions();
+            itemRequests = db.getItemRequests();
 
             updateCurrentDate();
+            setupUIBasedOnPermissions();
             renderInventory();
             renderTransactionHistory();
+            renderItemRequests();
             updateStats();
             updateTodayCounters();
             updateDivisionReport();
             populateYearOptions();
             
-            // Show default section
-            showSection('inventory');
+            // Show default section based on user role
+            if (isBuildingManager()) {
+                showSection('requests'); // Manager fokus ke approval
+            } else {
+                showSection('inventory');
+            }
         }
 
         // ========== FUNGSI UTILITAS ==========
@@ -736,27 +1026,143 @@
             }
         }
 
+        function setupUIBasedOnPermissions() {
+            // Hide/show navigation buttons based on permissions
+            const navButtons = document.querySelectorAll('main .grid button');
+            
+            navButtons.forEach(button => {
+                const onclick = button.getAttribute('onclick');
+                
+                // Hide buttons based on permissions
+                if (onclick && onclick.includes('transactions') && !hasPermission('manage_transactions')) {
+                    button.style.display = 'none';
+                }
+                if (onclick && onclick.includes('reports') && !hasPermission('manage_reports') && !hasPermission('view_reports')) {
+                    button.style.display = 'none';
+                }
+            });
+
+            // For division users, only show inventory (read-only) and requests
+            if (isDivisionUser()) {
+                // Hide transaction and report buttons
+                navButtons.forEach(button => {
+                    const onclick = button.getAttribute('onclick');
+                    if (onclick && (onclick.includes('transactions') || onclick.includes('reports'))) {
+                        button.style.display = 'none';
+                    }
+                });
+            }
+
+            // Hide add item button for non-warehouse users
+            const addItemBtn = document.getElementById('addItemBtn');
+            if (addItemBtn && !hasPermission('edit_inventory')) {
+                addItemBtn.style.display = 'none';
+            }
+
+            // Hide filter controls for division users (read-only access)
+            if (isDivisionUser()) {
+                const filterControls = document.querySelector('#inventory .mb-6.space-y-4');
+                if (filterControls) {
+                    // Keep search but hide other filters
+                    const filterButtons = filterControls.querySelectorAll('select, button');
+                    filterButtons.forEach(btn => {
+                        if (!btn.id || btn.id !== 'searchInventory') {
+                            btn.style.display = 'none';
+                        }
+                    });
+                }
+            }
+
+            // Add notification badge for building manager
+            if (isBuildingManager()) {
+                updateManagerNotifications();
+            }
+        }
+
         // ========== FUNGSI TAMPILAN DATA ==========
+        function updateManagerNotifications() {
+            if (!isBuildingManager()) return;
+            
+            const pendingManagerApprovals = itemRequests.filter(r => r.status === 'staff_approved').length;
+            
+            // Update requests button with notification badge
+            const requestsButton = document.querySelector('button[onclick="showSection(\'requests\')"]');
+            if (requestsButton && pendingManagerApprovals > 0) {
+                // Remove existing badge
+                const existingBadge = requestsButton.querySelector('.notification-badge');
+                if (existingBadge) existingBadge.remove();
+                
+                // Add new badge
+                const badge = document.createElement('div');
+                badge.className = 'notification-badge absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse';
+                badge.textContent = pendingManagerApprovals;
+                requestsButton.style.position = 'relative';
+                requestsButton.appendChild(badge);
+            }
+        }
+
         function renderInventory() {
             const tbody = document.getElementById('inventoryTable');
             tbody.innerHTML = '';
             
-            inventory.forEach(item => {
+            let filteredInventory = [...inventory];
+            
+            // Apply filters
+            const typeFilter = document.getElementById('filterType')?.value;
+            const movementFilter = document.getElementById('filterMovement')?.value;
+            const categoryFilter = document.getElementById('filterCategory')?.value;
+            const stockFilter = document.getElementById('filterStock')?.value;
+            
+            if (typeFilter) {
+                filteredInventory = filteredInventory.filter(item => item.type === typeFilter);
+            }
+            if (movementFilter) {
+                filteredInventory = filteredInventory.filter(item => item.movement === movementFilter);
+            }
+            if (categoryFilter) {
+                filteredInventory = filteredInventory.filter(item => item.category === categoryFilter);
+            }
+            if (stockFilter === 'low') {
+                filteredInventory = filteredInventory.filter(item => item.stock <= item.minStock);
+            } else if (stockFilter === 'normal') {
+                filteredInventory = filteredInventory.filter(item => item.stock > item.minStock);
+            }
+            
+            filteredInventory.forEach(item => {
                 const status = item.stock <= item.minStock ? 'Stok Rendah' : 'Normal';
                 const statusClass = item.stock <= item.minStock ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800';
                 
+                const typeInfo = getTypeInfo(item.type);
+                const movementInfo = getMovementInfo(item.movement);
+                
+                // Show action buttons only for warehouse staff
+                const actionButtons = hasPermission('edit_inventory') ? `
+                    <button onclick="editItem('${item.code}')" class="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
+                    <button onclick="deleteItem('${item.code}')" class="text-red-600 hover:text-red-900">Hapus</button>
+                ` : '<span class="text-gray-400 text-sm">Read Only</span>';
+                
                 const row = `
                     <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.code}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.name}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.category}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">${item.stock}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
+                        <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">${item.code}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${item.name}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">${item.category}</td>
+                        <td class="px-4 py-3 whitespace-nowrap">
+                            <span class="px-2 py-1 text-xs font-medium rounded ${typeInfo.bgColor} ${typeInfo.textColor}">
+                                ${typeInfo.icon} ${typeInfo.text}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3 whitespace-nowrap">
+                            <span class="px-2 py-1 text-xs font-medium rounded ${movementInfo.bgColor} ${movementInfo.textColor}">
+                                ${movementInfo.icon} ${movementInfo.text}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 font-semibold">${item.stock}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">${item.minStock}</td>
+                        <td class="px-4 py-3 whitespace-nowrap">
                             <span class="px-2 py-1 text-xs font-medium rounded-full ${statusClass}">${status}</span>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                            <button onclick="editItem('${item.code}')" class="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
-                            <button onclick="deleteItem('${item.code}')" class="text-red-600 hover:text-red-900">Hapus</button>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm">
+                            ${actionButtons}
                         </td>
                     </tr>
                 `;
@@ -839,7 +1245,9 @@
             const code = document.getElementById('newItemCode').value;
             const name = document.getElementById('newItemName').value;
             const category = document.getElementById('newItemCategory').value;
+            const type = document.getElementById('newItemType').value;
             const stock = parseInt(document.getElementById('newItemStock').value);
+            const minStock = parseInt(document.getElementById('newItemMinStock').value);
             
             // Cek apakah kode sudah ada
             if (inventory.find(item => item.code === code)) {
@@ -851,8 +1259,12 @@
                 code: code,
                 name: name,
                 category: category,
+                type: type,
                 stock: stock,
-                minStock: Math.max(1, Math.floor(stock * 0.2)) // 20% dari stok awal sebagai minimum
+                minStock: minStock,
+                movement: 'normal', // Default movement
+                totalOut: 0,
+                lastOut: null
             });
             
             // Simpan ke database
@@ -935,6 +1347,9 @@
             
             item.stock -= qty;
             
+            // Update item movement classification
+            updateItemMovement(code, qty);
+            
             const transaction = {
                 time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
                 type: 'Keluar',
@@ -964,6 +1379,76 @@
             event.target.reset();
             alert('Barang keluar berhasil dicatat!');
         }
+
+        // ========== FUNGSI UTILITAS BARU ==========
+        function getTypeInfo(type) {
+            const typeMap = {
+                'capex': { text: 'CAPEX', icon: '💰', bgColor: 'bg-blue-100', textColor: 'text-blue-800' },
+                'opex': { text: 'OPEX', icon: '🔄', bgColor: 'bg-green-100', textColor: 'text-green-800' }
+            };
+            return typeMap[type] || { text: 'Unknown', icon: '❓', bgColor: 'bg-gray-100', textColor: 'text-gray-800' };
+        }
+
+        function getMovementInfo(movement) {
+            const movementMap = {
+                'fast': { text: 'Fast', icon: '🚀', bgColor: 'bg-red-100', textColor: 'text-red-800' },
+                'normal': { text: 'Normal', icon: '📊', bgColor: 'bg-yellow-100', textColor: 'text-yellow-800' },
+                'slow': { text: 'Slow', icon: '🐌', bgColor: 'bg-gray-100', textColor: 'text-gray-800' }
+            };
+            return movementMap[movement] || movementMap['normal'];
+        }
+
+        function generateMonthlyRequestId() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth() + 1; // 1-12
+            const monthKey = `${year}-${month}`;
+            
+            // Get current month's counter from localStorage
+            const counterKey = `requestCounter_${monthKey}`;
+            let counter = parseInt(localStorage.getItem(counterKey) || '0') + 1;
+            
+            // Save updated counter
+            localStorage.setItem(counterKey, counter.toString());
+            
+            // Format: MR-XXX-M-YYYY (e.g., MR-001-1-2025)
+            return `MR-${String(counter).padStart(3, '0')}-${month}-${year}`;
+        }
+
+        function updateItemMovement(itemCode, quantity) {
+            const item = inventory.find(i => i.code === itemCode);
+            if (!item) return;
+            
+            // Update total out and last out date
+            item.totalOut = (item.totalOut || 0) + quantity;
+            item.lastOut = new Date().toISOString().split('T')[0];
+            
+            // Calculate movement based on usage frequency (simple algorithm)
+            const daysSinceLastOut = item.lastOut ? 
+                Math.floor((new Date() - new Date(item.lastOut)) / (1000 * 60 * 60 * 24)) : 999;
+            
+            if (item.totalOut >= 50 && daysSinceLastOut <= 7) {
+                item.movement = 'fast';
+            } else if (item.totalOut >= 20 && daysSinceLastOut <= 30) {
+                item.movement = 'normal';
+            } else {
+                item.movement = 'slow';
+            }
+        }
+
+        function applyInventoryFilters() {
+            renderInventory();
+        }
+
+        function resetInventoryFilters() {
+            document.getElementById('filterType').value = '';
+            document.getElementById('filterMovement').value = '';
+            document.getElementById('filterCategory').value = '';
+            document.getElementById('filterStock').value = '';
+            renderInventory();
+        }
+
+
 
         // ========== FUNGSI EDIT & HAPUS ==========
         function editItem(code) {
@@ -1323,6 +1808,554 @@
             }).join('');
         }
 
+        // ========== FUNGSI PERMINTAAN BARANG ==========
+        function showNewRequestForm() {
+            // Populate item dropdown
+            const itemSelect = document.getElementById('requestItemCode');
+            itemSelect.innerHTML = '<option value="">Pilih Barang</option>';
+            
+            inventory.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.code;
+                option.textContent = `${item.code} - ${item.name} (Stok: ${item.stock})`;
+                itemSelect.appendChild(option);
+            });
+
+            // Pre-fill user info for division users
+            if (isDivisionUser()) {
+                document.getElementById('requesterName').value = getCurrentUserName();
+                
+                const divisionSelect = document.getElementById('requesterDivision');
+                const userRole = getCurrentUserRole();
+                const divisionMap = {
+                    'security': 'Security',
+                    'engineering': 'Engineering', 
+                    'housekeeping': 'Housekeeping',
+                    'backoffice': 'Back Office'
+                };
+                
+                if (divisionMap[userRole]) {
+                    divisionSelect.value = divisionMap[userRole];
+                    divisionSelect.disabled = true; // Lock division for division users
+                }
+            }
+            
+            document.getElementById('newRequestModal').classList.remove('hidden');
+            document.getElementById('newRequestModal').classList.add('flex');
+        }
+
+        function hideNewRequestForm() {
+            document.getElementById('newRequestModal').classList.add('hidden');
+            document.getElementById('newRequestModal').classList.remove('flex');
+            
+            // Reset form
+            document.querySelector('#newRequestModal form').reset();
+            document.getElementById('itemInfo').classList.add('hidden');
+            document.getElementById('stockWarning').classList.add('hidden');
+        }
+
+        function updateItemInfo() {
+            const itemCode = document.getElementById('requestItemCode').value;
+            const itemInfo = document.getElementById('itemInfo');
+            const quantityInput = document.getElementById('requestQuantity');
+            
+            if (!itemCode) {
+                itemInfo.classList.add('hidden');
+                return;
+            }
+            
+            const item = inventory.find(i => i.code === itemCode);
+            if (item) {
+                document.getElementById('selectedItemName').textContent = item.name;
+                document.getElementById('selectedItemCategory').textContent = item.category;
+                document.getElementById('selectedItemStock').textContent = item.stock;
+                
+                const status = item.stock <= item.minStock ? 'Stok Rendah' : 'Normal';
+                const statusClass = item.stock <= item.minStock ? 'text-red-600' : 'text-green-600';
+                document.getElementById('selectedItemStatus').textContent = status;
+                document.getElementById('selectedItemStatus').className = `font-medium ml-2 ${statusClass}`;
+                
+                itemInfo.classList.remove('hidden');
+                
+                // Set max quantity
+                quantityInput.max = item.stock;
+                
+                // Add real-time validation
+                quantityInput.oninput = function() {
+                    validateQuantity(item.stock);
+                };
+            }
+        }
+
+        function validateQuantity(maxStock) {
+            const quantity = parseInt(document.getElementById('requestQuantity').value) || 0;
+            const warning = document.getElementById('stockWarning');
+            const submitBtn = document.getElementById('submitRequestBtn');
+            
+            if (quantity > maxStock) {
+                warning.classList.remove('hidden');
+                submitBtn.disabled = true;
+            } else {
+                warning.classList.add('hidden');
+                submitBtn.disabled = false;
+            }
+        }
+
+        function submitNewRequest(event) {
+            event.preventDefault();
+            
+            try {
+                const requesterName = document.getElementById('requesterName').value;
+                const requesterDivision = document.getElementById('requesterDivision').value;
+                const itemCode = document.getElementById('requestItemCode').value;
+                const quantity = parseInt(document.getElementById('requestQuantity').value);
+                const priority = document.getElementById('requestPriority').value;
+                const purpose = document.getElementById('requestPurpose').value;
+                
+                // Validasi input
+                if (!requesterName || !requesterDivision || !itemCode || !quantity || !priority || !purpose) {
+                    alert('Semua field harus diisi!');
+                    return;
+                }
+                
+                const item = inventory.find(i => i.code === itemCode);
+                if (!item) {
+                    alert('Barang tidak ditemukan!');
+                    return;
+                }
+                
+                if (quantity > item.stock) {
+                    alert('Jumlah permintaan melebihi stok tersedia!');
+                    return;
+                }
+                
+                // Generate request ID with monthly reset
+                const requestId = generateMonthlyRequestId();
+                
+                const newRequest = {
+                    id: requestId,
+                    requesterName: requesterName,
+                    requesterDivision: requesterDivision,
+                    itemCode: itemCode,
+                    itemName: item.name,
+                    quantity: quantity,
+                    priority: priority,
+                    purpose: purpose,
+                    status: 'pending',
+                    requestDate: new Date().toISOString().split('T')[0],
+                    requestTime: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+                    staffApproval: null,
+                    managerApproval: null,
+                    notes: []
+                };
+                
+                itemRequests.push(newRequest);
+                db.saveItemRequests(itemRequests);
+                
+                renderItemRequests();
+                hideNewRequestForm();
+                
+                alert(`✅ Permintaan berhasil dibuat!\n\nID Permintaan: ${requestId}\nStatus: Menunggu persetujuan Staff Warehouse`);
+                
+            } catch (error) {
+                console.error('Error submitting request:', error);
+                alert('Terjadi kesalahan saat mengirim permintaan. Silakan coba lagi.');
+            }
+        }
+
+        function renderItemRequests() {
+            const container = document.getElementById('requestsList');
+            container.innerHTML = '';
+            
+            if (itemRequests.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 bg-gray-50 rounded-lg">
+                        <div class="text-gray-400 text-6xl mb-4">📋</div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Belum Ada Permintaan</h3>
+                        <p class="text-gray-500">Klik "Buat Permintaan Baru" untuk memulai</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            itemRequests.slice().reverse().forEach(request => {
+                const statusInfo = getRequestStatusInfo(request.status);
+                const priorityInfo = getPriorityInfo(request.priority);
+                
+                const requestCard = `
+                    <div class="request-card bg-white rounded-lg shadow-md border-l-4 ${statusInfo.borderColor} p-6" data-status="${request.status}">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <div class="flex items-center space-x-3 mb-2">
+                                    <h3 class="text-lg font-semibold text-gray-900">${request.id}</h3>
+                                    <span class="px-3 py-1 text-xs font-medium rounded-full ${statusInfo.bgColor} ${statusInfo.textColor}">
+                                        ${statusInfo.icon} ${statusInfo.text}
+                                    </span>
+                                    <span class="px-2 py-1 text-xs font-medium rounded ${priorityInfo.bgColor} ${priorityInfo.textColor}">
+                                        ${priorityInfo.icon} ${priorityInfo.text}
+                                    </span>
+                                </div>
+                                <p class="text-sm text-gray-600">
+                                    📅 ${request.requestDate} • ⏰ ${request.requestTime} • 
+                                    👤 ${request.requesterName} (${getDivisionIcon(request.requesterDivision)} ${request.requesterDivision})
+                                </p>
+                            </div>
+                            <div class="text-right">
+                                <button onclick="showRequestDetail('${request.id}')" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                    Detail →
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <span class="text-xs text-gray-500 uppercase tracking-wide">Barang</span>
+                                    <p class="font-medium text-gray-900">${request.itemCode} - ${request.itemName}</p>
+                                </div>
+                                <div>
+                                    <span class="text-xs text-gray-500 uppercase tracking-wide">Jumlah</span>
+                                    <p class="font-bold text-blue-600">${request.quantity} unit</p>
+                                </div>
+                                <div>
+                                    <span class="text-xs text-gray-500 uppercase tracking-wide">Stok Tersedia</span>
+                                    <p class="font-medium ${getStockAvailability(request.itemCode, request.quantity).color}">
+                                        ${getStockAvailability(request.itemCode, request.quantity).text}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <span class="text-xs text-gray-500 uppercase tracking-wide">Keperluan</span>
+                            <p class="text-gray-700 mt-1">${request.purpose}</p>
+                        </div>
+                        
+                        ${renderApprovalFlow(request)}
+                        
+                        ${renderApprovalButtons(request)}
+                    </div>
+                `;
+                
+                container.innerHTML += requestCard;
+            });
+        }
+
+        function getRequestStatusInfo(status) {
+            const statusMap = {
+                'pending': {
+                    text: 'Menunggu Staff',
+                    icon: '⏳',
+                    bgColor: 'bg-yellow-100',
+                    textColor: 'text-yellow-800',
+                    borderColor: 'border-yellow-400'
+                },
+                'staff_approved': {
+                    text: 'Menunggu Manager',
+                    icon: '⏳',
+                    bgColor: 'bg-blue-100',
+                    textColor: 'text-blue-800',
+                    borderColor: 'border-blue-400'
+                },
+                'approved': {
+                    text: 'Disetujui',
+                    icon: '✅',
+                    bgColor: 'bg-green-100',
+                    textColor: 'text-green-800',
+                    borderColor: 'border-green-400'
+                },
+                'rejected': {
+                    text: 'Ditolak',
+                    icon: '❌',
+                    bgColor: 'bg-red-100',
+                    textColor: 'text-red-800',
+                    borderColor: 'border-red-400'
+                }
+            };
+            return statusMap[status] || statusMap['pending'];
+        }
+
+        function getPriorityInfo(priority) {
+            const priorityMap = {
+                'normal': { text: 'Normal', icon: '🟢', bgColor: 'bg-green-100', textColor: 'text-green-800' },
+                'urgent': { text: 'Mendesak', icon: '🟡', bgColor: 'bg-yellow-100', textColor: 'text-yellow-800' },
+                'critical': { text: 'Kritis', icon: '🔴', bgColor: 'bg-red-100', textColor: 'text-red-800' }
+            };
+            return priorityMap[priority] || priorityMap['normal'];
+        }
+
+        function getStockAvailability(itemCode, requestedQty) {
+            const item = inventory.find(i => i.code === itemCode);
+            if (!item) return { text: 'Barang tidak ditemukan', color: 'text-red-600' };
+            
+            if (item.stock >= requestedQty) {
+                return { text: `${item.stock} unit (Cukup)`, color: 'text-green-600' };
+            } else {
+                return { text: `${item.stock} unit (Tidak Cukup)`, color: 'text-red-600' };
+            }
+        }
+
+        function renderApprovalFlow(request) {
+            return `
+                <div class="bg-blue-50 rounded-lg p-4">
+                    <h4 class="font-medium text-blue-900 mb-3">🔄 Alur Persetujuan</h4>
+                    <div class="flex items-center space-x-4">
+                        <!-- Step 1: Requester -->
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-bold">✓</div>
+                            <div class="ml-2">
+                                <p class="text-xs text-gray-600">Pemohon</p>
+                                <p class="text-sm font-medium">${request.requesterName}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex-1 h-0.5 ${request.status !== 'pending' ? 'bg-green-500' : 'bg-gray-300'}"></div>
+                        
+                        <!-- Step 2: Staff Warehouse -->
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 ${request.status !== 'pending' ? 'bg-green-500' : request.status === 'pending' ? 'bg-yellow-500' : 'bg-gray-300'} rounded-full flex items-center justify-center text-white text-sm font-bold">
+                                ${request.status !== 'pending' ? '✓' : request.status === 'pending' ? '⏳' : '○'}
+                            </div>
+                            <div class="ml-2">
+                                <p class="text-xs text-gray-600">Staff Warehouse</p>
+                                <p class="text-sm font-medium">${request.staffApproval ? request.staffApproval.approvedBy : 'Menunggu'}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex-1 h-0.5 ${request.status === 'approved' ? 'bg-green-500' : 'bg-gray-300'}"></div>
+                        
+                        <!-- Step 3: Building Manager -->
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 ${request.status === 'approved' ? 'bg-green-500' : request.status === 'staff_approved' ? 'bg-yellow-500' : 'bg-gray-300'} rounded-full flex items-center justify-center text-white text-sm font-bold">
+                                ${request.status === 'approved' ? '✓' : request.status === 'staff_approved' ? '⏳' : '○'}
+                            </div>
+                            <div class="ml-2">
+                                <p class="text-xs text-gray-600">Building Manager</p>
+                                <p class="text-sm font-medium">${request.managerApproval ? request.managerApproval.approvedBy : 'Menunggu'}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderApprovalButtons(request) {
+            // Division users can't approve anything
+            if (isDivisionUser()) {
+                return '';
+            }
+
+            // Warehouse staff can approve pending requests
+            if (isWarehouseStaff() && request.status === 'pending') {
+                return `
+                    <div class="flex space-x-2 mt-4">
+                        <button onclick="approveRequestByStaff('${request.id}')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                            ✅ Setujui (Staff)
+                        </button>
+                        <button onclick="rejectRequest('${request.id}')" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                            ❌ Tolak
+                        </button>
+                    </div>
+                `;
+            }
+
+            // Building manager can approve staff-approved requests
+            if (isBuildingManager() && request.status === 'staff_approved') {
+                return `
+                    <div class="flex space-x-2 mt-4">
+                        <button onclick="approveRequestByManager('${request.id}')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                            ✅ Setujui Final (Manager)
+                        </button>
+                        <button onclick="rejectRequest('${request.id}')" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                            ❌ Tolak
+                        </button>
+                    </div>
+                `;
+            }
+
+            return '';
+        }
+
+        function filterRequests(status) {
+            // Update active filter button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-gray-600', 'text-white');
+                btn.classList.add('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+            });
+            
+            event.target.classList.add('active', 'bg-gray-600', 'text-white');
+            event.target.classList.remove('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+            
+            // Filter requests
+            const requestCards = document.querySelectorAll('.request-card');
+            requestCards.forEach(card => {
+                if (status === 'all' || card.dataset.status === status) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function approveRequestByStaff(requestId) {
+            if (!hasPermission('approve_staff')) {
+                alert('❌ Anda tidak memiliki izin untuk menyetujui permintaan!');
+                return;
+            }
+
+            const request = itemRequests.find(r => r.id === requestId);
+            if (!request) return;
+            
+            const note = prompt('Catatan persetujuan (opsional):') || 'Disetujui oleh staff warehouse';
+            
+            request.status = 'staff_approved';
+            request.staffApproval = {
+                approvedBy: getCurrentUserName(),
+                approvedAt: new Date().toISOString(),
+                note: note
+            };
+            
+            db.saveItemRequests(itemRequests);
+            renderItemRequests();
+            updateManagerNotifications(); // Update notification badge
+            
+            alert(`✅ Permintaan ${requestId} telah disetujui oleh Staff Warehouse!\nStatus: Menunggu persetujuan Building Manager\n\n🔔 Notifikasi telah dikirim ke Building Manager`);
+        }
+
+        function approveRequestByManager(requestId) {
+            if (!hasPermission('final_approval')) {
+                alert('❌ Anda tidak memiliki izin untuk persetujuan final!');
+                return;
+            }
+
+            const request = itemRequests.find(r => r.id === requestId);
+            if (!request) return;
+            
+            // Check stock availability
+            const item = inventory.find(i => i.code === request.itemCode);
+            if (!item || item.stock < request.quantity) {
+                alert('❌ Tidak dapat menyetujui: Stok tidak mencukupi!');
+                return;
+            }
+            
+            const note = prompt('Catatan persetujuan final (opsional):') || 'Disetujui oleh building manager';
+            
+            request.status = 'approved';
+            request.managerApproval = {
+                approvedBy: getCurrentUserName(),
+                approvedAt: new Date().toISOString(),
+                note: note
+            };
+            
+            // Kurangi stok dan buat transaksi
+            item.stock -= request.quantity;
+            
+            // Update item movement classification
+            updateItemMovement(request.itemCode, request.quantity);
+            
+            const transaction = {
+                time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+                type: 'Keluar',
+                code: request.itemCode,
+                qty: request.quantity,
+                division: request.requesterDivision,
+                requestedBy: request.requesterName,
+                purpose: request.purpose,
+                note: `Permintaan ${requestId} - ${request.purpose}`
+            };
+            
+            db.addTransaction(transaction);
+            db.saveInventory(inventory);
+            db.saveItemRequests(itemRequests);
+            
+            // Update arrays
+            transactions = db.getTransactions();
+            
+            renderItemRequests();
+            renderInventory();
+            renderTransactionHistory();
+            updateStats();
+            updateTodayCounters();
+            updateManagerNotifications(); // Update notification badge
+            
+            alert(`✅ Permintaan ${requestId} telah DISETUJUI FINAL!\n\n📦 Barang telah dikeluarkan dari gudang\n📋 Transaksi telah dicatat`);
+        }
+
+        function rejectRequest(requestId) {
+            const request = itemRequests.find(r => r.id === requestId);
+            if (!request) return;
+            
+            const reason = prompt('Alasan penolakan:');
+            if (!reason) return;
+            
+            request.status = 'rejected';
+            request.rejectionReason = reason;
+            request.rejectedAt = new Date().toISOString();
+            request.rejectedBy = request.status === 'pending' ? 'Staff Warehouse' : 'Building Manager';
+            
+            db.saveItemRequests(itemRequests);
+            renderItemRequests();
+            
+            alert(`❌ Permintaan ${requestId} telah DITOLAK\n\nAlasan: ${reason}`);
+        }
+
+        function showRequestDetail(requestId) {
+            const request = itemRequests.find(r => r.id === requestId);
+            if (!request) return;
+            
+            const statusInfo = getRequestStatusInfo(request.status);
+            const priorityInfo = getPriorityInfo(request.priority);
+            
+            let detailHTML = `
+                📋 DETAIL PERMINTAAN BARANG
+                
+                ID Permintaan: ${request.id}
+                Status: ${statusInfo.icon} ${statusInfo.text}
+                Prioritas: ${priorityInfo.icon} ${priorityInfo.text}
+                
+                👤 PEMOHON:
+                Nama: ${request.requesterName}
+                Divisi: ${getDivisionIcon(request.requesterDivision)} ${request.requesterDivision}
+                Tanggal: ${request.requestDate} ${request.requestTime}
+                
+                📦 BARANG:
+                Kode: ${request.itemCode}
+                Nama: ${request.itemName}
+                Jumlah: ${request.quantity} unit
+                
+                📝 KEPERLUAN:
+                ${request.purpose}
+                
+                🔄 RIWAYAT PERSETUJUAN:
+            `;
+            
+            if (request.staffApproval) {
+                detailHTML += `
+                ✅ Staff Warehouse: ${request.staffApproval.approvedBy}
+                   Waktu: ${new Date(request.staffApproval.approvedAt).toLocaleString('id-ID')}
+                   Catatan: ${request.staffApproval.note}
+                `;
+            }
+            
+            if (request.managerApproval) {
+                detailHTML += `
+                ✅ Building Manager: ${request.managerApproval.approvedBy}
+                   Waktu: ${new Date(request.managerApproval.approvedAt).toLocaleString('id-ID')}
+                   Catatan: ${request.managerApproval.note}
+                `;
+            }
+            
+            if (request.status === 'rejected') {
+                detailHTML += `
+                ❌ DITOLAK oleh: ${request.rejectedBy}
+                   Waktu: ${new Date(request.rejectedAt).toLocaleString('id-ID')}
+                   Alasan: ${request.rejectionReason}
+                `;
+            }
+            
+            alert(detailHTML);
+        }
+
         // ========== FUNGSI DATABASE MANAGEMENT ==========
         function exportDatabase() {
             db.exportData();
@@ -1407,7 +2440,9 @@
                     });
                 });
             }
+            
+
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'984094dbb3b338f0',t:'MTc1ODY5OTA3OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98423bca3740f9b7',t:'MTc1ODcxNjQwMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
