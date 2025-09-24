@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Manajemen Gudang - Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .fade-in { animation: fadeIn 0.8s ease-out; }
+        .slide-up { animation: slideUp 0.6s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .login-container { min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .shake { animation: shake 0.5s ease-in-out; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+    </style>
+</head>
+<body>
+
+    <!-- ========== LOGIN SCREEN ========== -->
+    <div id="loginScreen" class="login-container flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md slide-up">
+            <div class="text-center mb-8">
+                <div class="bg-blue-600 p-4 rounded-full inline-block mb-4">
+                    <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                    </svg>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Gudang Central</h1>
+                <p class="text-gray-600">Sistem Manajemen Inventory</p>
+            </div>
+
+            <form onsubmit="handleLogin(event)" class="space-y-6">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                        </div>
+                        <input type="text" id="username" name="username" required 
+                               class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                               placeholder="Masukkan username">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                            </svg>
+                        </div>
+                        <input type="password" id="password" name="password" required 
+                               class="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                               placeholder="Masukkan password">
+                        <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                            <svg id="eyeIcon" class="h-5 w-5 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="errorMessage" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>Username atau password salah!</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    <span class="flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                        </svg>
+                        Masuk ke Sistem
+                    </span>
+                </button>
+            </form>
+
+
+
+            <div class="mt-4 text-center">
+                <p class="text-xs text-gray-500">
+                    © 2024 Gudang Central. Sistem Manajemen Inventory.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== MAIN APPLICATION (Hidden initially) ========== -->
+    <div id="mainApp" class="hidden">
+        <!-- Previous warehouse management system code goes here -->
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+            
+            <!-- ========== HEADER SECTION ========== -->
+            <header class="bg-white shadow-lg border-b-4 border-blue-600">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex justify-between items-center py-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="bg-blue-600 p-2 rounded-lg">
+                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h1 class="text-2xl font-bold text-gray-900">Gudang Central</h1>
+                                <p class="text-sm text-gray-600">Sistem Manajemen Inventory</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <span class="text-sm text-gray-600">👤 <span id="loggedInUser">ga_warehouse</span></span>
+                            <span class="text-sm text-gray-600">📅 <span id="currentDate"></span></span>
+                            <button onclick="logout()" class="bg-red-100 hover:bg-red-200 text-red-800 px-3 py-1 rounded-full text-sm font-medium transition-colors">
+                                🚪 Logout
+                            </button>
+                            <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                                🟢 Online
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- ========== MAIN CONTENT SECTION ========== -->
+            <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                
+                <!-- ========== STATISTIK CARDS ========== -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-xl shadow-md p-6 card-hover fade-in">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Total Barang</p>
+                                <p class="text-3xl font-bold text-blue-600" id="totalItems">1,247</p>
+                            </div>
+                            <div class="bg-blue-100 p-3 rounded-full">
+                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-md p-6 card-hover fade-in">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Stok Rendah</p>
+                                <p class="text-3xl font-bold text-red-600" id="lowStock">23</p>
+                            </div>
+                            <div class="bg-red-100 p-3 rounded-full">
+                                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-md p-6 card-hover fade-in">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Barang Masuk Hari Ini</p>
+                                <p class="text-3xl font-bold text-green-600" id="todayIn">0</p>
+                            </div>
+                            <div class="bg-green-100 p-3 rounded-full">
+                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-md p-6 card-hover fade-in">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Barang Keluar Hari Ini</p>
+                                <p class="text-3xl font-bold text-orange-600" id="todayOut">0</p>
+                            </div>
+                            <div class="bg-orange-100 p-3 rounded-full">
+                                <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== TOMBOL NAVIGASI ========== -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <button onclick="showSection('inventory')" class="bg-white rounded-xl shadow-md p-6 card-hover fade-in text-left group">
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-blue-100 p-3 rounded-full group-hover:bg-blue-200 transition-colors">
+                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">Kelola Inventory</h3>
+                                <p class="text-sm text-gray-600">Lihat dan kelola stok barang</p>
+                            </div>
+                        </div>
+                    </button>
+
+                    <button onclick="showSection('transactions')" class="bg-white rounded-xl shadow-md p-6 card-hover fade-in text-left group">
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-green-100 p-3 rounded-full group-hover:bg-green-200 transition-colors">
+                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">Transaksi</h3>
+                                <p class="text-sm text-gray-600">Catat barang masuk & keluar</p>
+                            </div>
+                        </div>
+                    </button>
+
+                    <button onclick="showSection('reports')" class="bg-white rounded-xl shadow-md p-6 card-hover fade-in text-left group">
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-purple-100 p-3 rounded-full group-hover:bg-purple-200 transition-colors">
+                                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">Laporan</h3>
+                                <p class="text-sm text-gray-600">Analisis dan laporan gudang</p>
+                            </div>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- ========== KONTEN UTAMA ========== -->
+                <div id="mainContent" class="bg-white rounded-xl shadow-lg p-8 fade-in">
+                    
+                    <!-- ========== SECTION INVENTORY ========== -->
+                    <div id="inventory" class="section">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-2xl font-bold text-gray-900">📦 Inventory Barang</h2>
+                            <button onclick="showAddItemForm()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                + Tambah Barang
+                            </button>
+                        </div>
+
+                        <div class="mb-4">
+                            <input type="text" id="searchInventory" placeholder="🔍 Cari barang..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full table-auto">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kode</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Barang</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stok</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="inventoryTable" class="bg-white divide-y divide-gray-200">
+                                    <!-- Data will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- ========== SECTION TRANSAKSI ========== -->
+                    <div id="transactions" class="section hidden">
+                        <h2 class="text-2xl font-bold text-gray-900 mb-6">📋 Transaksi Gudang</h2>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <!-- Barang Masuk -->
+                            <div class="bg-green-50 rounded-lg p-6">
+                                <h3 class="text-lg font-semibold text-green-800 mb-4">📥 Barang Masuk</h3>
+                                <form onsubmit="addIncomingItem(event)" class="space-y-4">
+                                    <input type="text" id="incomingCode" placeholder="Kode Barang" class="w-full px-3 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500" required>
+                                    <input type="number" id="incomingQty" placeholder="Jumlah" class="w-full px-3 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500" required>
+                                    <input type="text" id="incomingSupplier" placeholder="Supplier" class="w-full px-3 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500" required>
+                                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-medium transition-colors">
+                                        Tambah Barang Masuk
+                                    </button>
+                                </form>
+                            </div>
+
+                            <!-- Barang Keluar -->
+                            <div class="bg-red-50 rounded-lg p-6">
+                                <h3 class="text-lg font-semibold text-red-800 mb-4">📤 Barang Keluar</h3>
+                                <form onsubmit="addOutgoingItem(event)" class="space-y-4">
+                                    <input type="text" id="outgoingCode" placeholder="Kode Barang" class="w-full px-3 py-2 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500" required>
+                                    <input type="number" id="outgoingQty" placeholder="Jumlah" class="w-full px-3 py-2 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500" required>
+                                    <select id="outgoingDivision" class="w-full px-3 py-2 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500" required>
+                                        <option value="">Pilih Divisi</option>
+                                        <option value="Housekeeping">🧹 Housekeeping</option>
+                                        <option value="Security">🛡️ Security</option>
+                                        <option value="Back Office">💼 Back Office</option>
+                                        <option value="Engineering">🔧 Engineering</option>
+                                        <option value="HR">👥 HR</option>
+                                        <option value="Finance">💰 Finance</option>
+                                    </select>
+                                    <input type="text" id="outgoingRequestedBy" placeholder="Diminta oleh (Nama Karyawan)" class="w-full px-3 py-2 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500" required>
+                                    <textarea id="outgoingPurpose" placeholder="Keperluan/Tujuan penggunaan" class="w-full px-3 py-2 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 h-20 resize-none" required></textarea>
+                                    <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg font-medium transition-colors">
+                                        Keluarkan Barang
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Recent Transactions -->
+                        <div class="mt-8">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Transaksi Terbaru</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full table-auto">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Waktu</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Jenis</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kode</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Jumlah</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Divisi</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Keterangan</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="transactionHistory" class="bg-white divide-y divide-gray-200">
+                                        <!-- Data will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ========== SECTION LAPORAN ========== -->
+                    <div id="reports" class="section hidden">
+                        <h2 class="text-2xl font-bold text-gray-900 mb-6">📊 Laporan Gudang</h2>
+                        
+                        <!-- Filter Laporan -->
+                        <div class="mb-6">
+                            <div class="flex flex-wrap gap-4 items-center">
+                                <select id="reportMonth" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                                    <option value="">Pilih Bulan</option>
+                                    <option value="01">Januari</option>
+                                    <option value="02">Februari</option>
+                                    <option value="03">Maret</option>
+                                    <option value="04">April</option>
+                                    <option value="05">Mei</option>
+                                    <option value="06">Juni</option>
+                                    <option value="07">Juli</option>
+                                    <option value="08">Agustus</option>
+                                    <option value="09">September</option>
+                                    <option value="10">Oktober</option>
+                                    <option value="11">November</option>
+                                    <option value="12">Desember</option>
+                                </select>
+                                <select id="reportYear" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                                    <option value="">Pilih Tahun</option>
+                                </select>
+                                <button onclick="generateMonthlyReport()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                    📊 Generate Laporan
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <div class="bg-blue-50 rounded-lg p-6">
+                                <h3 class="text-lg font-semibold text-blue-800 mb-4">Ringkasan Bulanan</h3>
+                                <div class="space-y-3" id="monthlyStats">
+                                    <div class="text-center text-gray-500 py-4">
+                                        Pilih bulan dan tahun untuk melihat laporan
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-purple-50 rounded-lg p-6">
+                                <h3 class="text-lg font-semibold text-purple-800 mb-4">Barang Terlaris Bulan Ini</h3>
+                                <div class="space-y-2" id="topItems">
+                                    <div class="text-center text-gray-500 py-4">
+                                        Pilih bulan dan tahun untuk melihat data
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Laporan Per Divisi -->
+                        <div class="mt-8">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">📋 Laporan Per Divisi</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="divisionReport">
+                                <!-- Data akan diisi oleh JavaScript -->
+                            </div>
+                        </div>
+
+                        <div class="mt-8">
+                            <div class="flex flex-wrap gap-4">
+                                <button onclick="generateReport()" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                                    📄 Generate Laporan PDF
+                                </button>
+                                <button onclick="exportDatabase()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                                    💾 Backup Database
+                                </button>
+                                <button onclick="showImportModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                                    📥 Import Database
+                                </button>
+                                <button onclick="resetDatabase()" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                                    🔄 Reset Database
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- ========== MODAL TAMBAH BARANG ========== -->
+    <div id="addItemModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold text-gray-900 mb-6">Tambah Barang Baru</h3>
+            <form onsubmit="addNewItem(event)" class="space-y-4">
+                <input type="text" id="newItemCode" placeholder="Kode Barang" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                <input type="text" id="newItemName" placeholder="Nama Barang" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                <select id="newItemCategory" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                    <option value="">Pilih Kategori</option>
+                    <option value="Elektronik">Elektronik</option>
+                    <option value="Furniture">Furniture</option>
+                    <option value="Alat Tulis">Alat Tulis</option>
+                    <option value="Lainnya">Lainnya</option>
+                </select>
+                <input type="number" id="newItemStock" placeholder="Stok Awal" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                <div class="flex space-x-3">
+                    <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-medium transition-colors">
+                        Tambah
+                    </button>
+                    <button type="button" onclick="hideAddItemForm()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 rounded-lg font-medium transition-colors">
+                        Batal
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========== MODAL IMPORT DATABASE ========== -->
+    <div id="importModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold text-gray-900 mb-6">Import Database</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Pilih File Backup (.json)</label>
+                    <input type="file" id="importFile" accept=".json" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="flex space-x-3">
+                    <button onclick="importDatabase()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-medium transition-colors">
+                        Import
+                    </button>
+                    <button onclick="hideImportModal()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 rounded-lg font-medium transition-colors">
+                        Batal
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== JAVASCRIPT CODE ========== -->
+    <script>
+        // ========== LOGIN SYSTEM ==========
+        const VALID_CREDENTIALS = {
+            username: 'ga_warehouse',
+            password: 'warehouse_epa001'
+        };
+
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+            const loginForm = event.target;
+            
+            // Validate credentials
+            if (username === VALID_CREDENTIALS.username && password === VALID_CREDENTIALS.password) {
+                // Success - hide login screen and show main app
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('mainApp').classList.remove('hidden');
+                
+                // Initialize the main application
+                initializeApp();
+                
+                // Store login status
+                sessionStorage.setItem('isLoggedIn', 'true');
+                sessionStorage.setItem('username', username);
+                
+            } else {
+                // Error - show error message and shake form
+                errorMessage.classList.remove('hidden');
+                loginForm.classList.add('shake');
+                
+                // Remove shake animation after it completes
+                setTimeout(() => {
+                    loginForm.classList.remove('shake');
+                }, 500);
+                
+                // Clear password field
+                document.getElementById('password').value = '';
+            }
+        }
+
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eyeIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"></path>
+                `;
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                `;
+            }
+        }
+
+        function logout() {
+            if (confirm('Yakin ingin logout dari sistem?')) {
+                // Clear session
+                sessionStorage.removeItem('isLoggedIn');
+                sessionStorage.removeItem('username');
+                
+                // Show login screen and hide main app
+                document.getElementById('loginScreen').style.display = 'flex';
+                document.getElementById('mainApp').classList.add('hidden');
+                
+                // Clear login form
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+                document.getElementById('errorMessage').classList.add('hidden');
+            }
+        }
+
+        // Check if user is already logged in
+        function checkLoginStatus() {
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+            const username = sessionStorage.getItem('username');
+            
+            if (isLoggedIn === 'true' && username) {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('mainApp').classList.remove('hidden');
+                document.getElementById('loggedInUser').textContent = username;
+                initializeApp();
+            }
+        }
+
+        // ========== DATABASE SYSTEM ==========
+        class WarehouseDB {
+            constructor() {
+                this.dbName = 'gudangCentralDB';
+                this.init();
+            }
+
+            init() {
+                // Inisialisasi database jika belum ada
+                if (!localStorage.getItem(this.dbName)) {
+                    const initialData = {
+                        inventory: [
+                            { code: 'LT001', name: 'Laptop Dell XPS 13', category: 'Elektronik', stock: 15, minStock: 5 },
+                            { code: 'MS002', name: 'Mouse Wireless Logitech', category: 'Elektronik', stock: 45, minStock: 10 },
+                            { code: 'KB003', name: 'Keyboard Mechanical', category: 'Elektronik', stock: 3, minStock: 5 },
+                            { code: 'CH004', name: 'Kursi Kantor Ergonomis', category: 'Furniture', stock: 8, minStock: 3 },
+                            { code: 'PN005', name: 'Pulpen Pilot', category: 'Alat Tulis', stock: 120, minStock: 50 },
+                            { code: 'CL006', name: 'Pembersih Lantai', category: 'Cleaning', stock: 25, minStock: 10 },
+                            { code: 'SC007', name: 'Walkie Talkie', category: 'Security', stock: 8, minStock: 2 },
+                            { code: 'PR008', name: 'Printer Canon', category: 'Elektronik', stock: 5, minStock: 2 },
+                            { code: 'TL009', name: 'Tool Set', category: 'Engineering', stock: 12, minStock: 3 }
+                        ],
+                        transactions: [
+                            { time: '10:30', type: 'Masuk', code: 'LT001', qty: 5, note: 'Dari Supplier ABC', date: new Date().toISOString().split('T')[0], division: '-', requestedBy: '-', purpose: '-' },
+                            { time: '11:15', type: 'Keluar', code: 'MS002', qty: 10, note: 'Untuk keperluan kantor', date: new Date().toISOString().split('T')[0], division: 'Back Office', requestedBy: 'Budi Santoso', purpose: 'Upgrade workstation karyawan' },
+                            { time: '14:20', type: 'Masuk', code: 'KB003', qty: 15, note: 'Dari Supplier XYZ', date: new Date().toISOString().split('T')[0], division: '-', requestedBy: '-', purpose: '-' }
+                        ],
+                        settings: {
+                            lastBackup: new Date().toISOString(),
+                            version: '1.0'
+                        }
+                    };
+                    this.saveData(initialData);
+                }
+            }
+
+            // Ambil semua data
+            getData() {
+                const data = localStorage.getItem(this.dbName);
+                return data ? JSON.parse(data) : null;
+            }
+
+            // Simpan semua data
+            saveData(data) {
+                localStorage.setItem(this.dbName, JSON.stringify(data));
+            }
+
+            // Ambil inventory
+            getInventory() {
+                const data = this.getData();
+                return data ? data.inventory : [];
+            }
+
+            // Simpan inventory
+            saveInventory(inventory) {
+                const data = this.getData();
+                data.inventory = inventory;
+                this.saveData(data);
+            }
+
+            // Ambil transaksi
+            getTransactions() {
+                const data = this.getData();
+                return data ? data.transactions : [];
+            }
+
+            // Simpan transaksi
+            saveTransactions(transactions) {
+                const data = this.getData();
+                data.transactions = transactions;
+                this.saveData(data);
+            }
+
+            // Tambah transaksi baru
+            addTransaction(transaction) {
+                const transactions = this.getTransactions();
+                transaction.date = new Date().toISOString().split('T')[0];
+                transaction.id = Date.now(); // ID unik
+                transactions.push(transaction);
+                this.saveTransactions(transactions);
+            }
+
+            // Backup data
+            exportData() {
+                const data = this.getData();
+                const dataStr = JSON.stringify(data, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = `gudang-backup-${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+            }
+
+            // Import data
+            importData(jsonData) {
+                try {
+                    const data = JSON.parse(jsonData);
+                    this.saveData(data);
+                    return true;
+                } catch (error) {
+                    console.error('Error importing data:', error);
+                    return false;
+                }
+            }
+
+            // Reset database
+            resetDatabase() {
+                localStorage.removeItem(this.dbName);
+                this.init();
+            }
+        }
+
+        // Global variables
+        let db, inventory, transactions;
+
+        // ========== INISIALISASI APLIKASI ==========
+        function initializeApp() {
+            // Inisialisasi database
+            db = new WarehouseDB();
+            
+            // Load data dari database
+            inventory = db.getInventory();
+            transactions = db.getTransactions();
+
+            updateCurrentDate();
+            renderInventory();
+            renderTransactionHistory();
+            updateStats();
+            updateTodayCounters();
+            updateDivisionReport();
+            populateYearOptions();
+            
+            // Show default section
+            showSection('inventory');
+        }
+
+        // ========== FUNGSI UTILITAS ==========
+        function updateCurrentDate() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('id-ID', options);
+        }
+
+        function showSection(sectionName) {
+            // Sembunyikan semua section
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Tampilkan section yang dipilih
+            document.getElementById(sectionName).classList.remove('hidden');
+        }
+
+        function populateYearOptions() {
+            const yearSelect = document.getElementById('reportYear');
+            const currentYear = new Date().getFullYear();
+            
+            // Clear existing options except the first one
+            yearSelect.innerHTML = '<option value="">Pilih Tahun</option>';
+            
+            // Tambahkan tahun dari 2020 sampai 10 tahun ke depan
+            for (let year = 2020; year <= currentYear + 10; year++) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
+            }
+        }
+
+        // ========== FUNGSI TAMPILAN DATA ==========
+        function renderInventory() {
+            const tbody = document.getElementById('inventoryTable');
+            tbody.innerHTML = '';
+            
+            inventory.forEach(item => {
+                const status = item.stock <= item.minStock ? 'Stok Rendah' : 'Normal';
+                const statusClass = item.stock <= item.minStock ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800';
+                
+                const row = `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.code}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.category}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">${item.stock}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 py-1 text-xs font-medium rounded-full ${statusClass}">${status}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            <button onclick="editItem('${item.code}')" class="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
+                            <button onclick="deleteItem('${item.code}')" class="text-red-600 hover:text-red-900">Hapus</button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function renderTransactionHistory() {
+            const tbody = document.getElementById('transactionHistory');
+            tbody.innerHTML = '';
+            
+            transactions.slice(-10).reverse().forEach(transaction => {
+                const typeClass = transaction.type === 'Masuk' ? 'text-green-600' : 'text-red-600';
+                const typeIcon = transaction.type === 'Masuk' ? '📥' : '📤';
+                const division = transaction.division || '-';
+                const divisionIcon = getDivisionIcon(division);
+                
+                const row = `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-3 text-sm text-gray-500">${transaction.date || new Date().toISOString().split('T')[0]}</td>
+                        <td class="px-4 py-3 text-sm text-gray-500">${transaction.time}</td>
+                        <td class="px-4 py-3 text-sm ${typeClass} font-medium">${typeIcon} ${transaction.type}</td>
+                        <td class="px-4 py-3 text-sm text-gray-900">${transaction.code}</td>
+                        <td class="px-4 py-3 text-sm text-gray-900 font-semibold">${transaction.qty}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${divisionIcon} ${division}</td>
+                        <td class="px-4 py-3 text-sm text-gray-500">${transaction.note}</td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function getDivisionIcon(division) {
+            const icons = {
+                'Housekeeping': '🧹',
+                'Security': '🛡️',
+                'Back Office': '💼',
+                'Engineering': '🔧',
+                'HR': '👥',
+                'Finance': '💰',
+                '-': ''
+            };
+            return icons[division] || '';
+        }
+
+        function updateStats() {
+            const totalItems = inventory.reduce((sum, item) => sum + item.stock, 0);
+            const lowStockItems = inventory.filter(item => item.stock <= item.minStock).length;
+            
+            document.getElementById('totalItems').textContent = totalItems.toLocaleString();
+            document.getElementById('lowStock').textContent = lowStockItems;
+        }
+
+        function updateTodayCounters() {
+            const today = new Date().toISOString().split('T')[0];
+            const todayTransactions = transactions.filter(t => t.date === today);
+            
+            const todayIn = todayTransactions.filter(t => t.type === 'Masuk').reduce((sum, t) => sum + t.qty, 0);
+            const todayOut = todayTransactions.filter(t => t.type === 'Keluar').reduce((sum, t) => sum + t.qty, 0);
+            
+            document.getElementById('todayIn').textContent = todayIn;
+            document.getElementById('todayOut').textContent = todayOut;
+        }
+
+        // ========== FUNGSI MODAL ==========
+        function showAddItemForm() {
+            document.getElementById('addItemModal').classList.remove('hidden');
+            document.getElementById('addItemModal').classList.add('flex');
+        }
+
+        function hideAddItemForm() {
+            document.getElementById('addItemModal').classList.add('hidden');
+            document.getElementById('addItemModal').classList.remove('flex');
+        }
+
+        // ========== FUNGSI KELOLA BARANG ==========
+        function addNewItem(event) {
+            event.preventDefault();
+            
+            const code = document.getElementById('newItemCode').value;
+            const name = document.getElementById('newItemName').value;
+            const category = document.getElementById('newItemCategory').value;
+            const stock = parseInt(document.getElementById('newItemStock').value);
+            
+            // Cek apakah kode sudah ada
+            if (inventory.find(item => item.code === code)) {
+                alert('Kode barang sudah ada!');
+                return;
+            }
+            
+            inventory.push({
+                code: code,
+                name: name,
+                category: category,
+                stock: stock,
+                minStock: Math.max(1, Math.floor(stock * 0.2)) // 20% dari stok awal sebagai minimum
+            });
+            
+            // Simpan ke database
+            db.saveInventory(inventory);
+            
+            renderInventory();
+            updateStats();
+            hideAddItemForm();
+            
+            // Bersihkan form
+            event.target.reset();
+            
+            alert('Barang berhasil ditambahkan!');
+        }
+
+        // ========== FUNGSI TRANSAKSI ==========
+        function addIncomingItem(event) {
+            event.preventDefault();
+            
+            const code = document.getElementById('incomingCode').value;
+            const qty = parseInt(document.getElementById('incomingQty').value);
+            const supplier = document.getElementById('incomingSupplier').value;
+            
+            const item = inventory.find(item => item.code === code);
+            if (!item) {
+                alert('Kode barang tidak ditemukan!');
+                return;
+            }
+            
+            item.stock += qty;
+            
+            const transaction = {
+                time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+                type: 'Masuk',
+                code: code,
+                qty: qty,
+                division: '-',
+                requestedBy: '-',
+                purpose: '-',
+                note: `Dari ${supplier}`
+            };
+            
+            // Simpan ke database
+            db.addTransaction(transaction);
+            db.saveInventory(inventory);
+            
+            // Update array lokal
+            transactions = db.getTransactions();
+            
+            renderInventory();
+            renderTransactionHistory();
+            updateStats();
+            
+            // Update hitungan barang masuk hari ini
+            updateTodayCounters();
+            
+            event.target.reset();
+            alert('Barang masuk berhasil dicatat!');
+        }
+
+        function addOutgoingItem(event) {
+            event.preventDefault();
+            
+            const code = document.getElementById('outgoingCode').value;
+            const qty = parseInt(document.getElementById('outgoingQty').value);
+            const division = document.getElementById('outgoingDivision').value;
+            const requestedBy = document.getElementById('outgoingRequestedBy').value;
+            const purpose = document.getElementById('outgoingPurpose').value;
+            
+            const item = inventory.find(item => item.code === code);
+            if (!item) {
+                alert('Kode barang tidak ditemukan!');
+                return;
+            }
+            
+            if (item.stock < qty) {
+                alert('Stok tidak mencukupi!');
+                return;
+            }
+            
+            item.stock -= qty;
+            
+            const transaction = {
+                time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+                type: 'Keluar',
+                code: code,
+                qty: qty,
+                division: division,
+                requestedBy: requestedBy,
+                purpose: purpose,
+                note: `Diminta oleh ${requestedBy} (${division}) - ${purpose}`
+            };
+            
+            // Simpan ke database
+            db.addTransaction(transaction);
+            db.saveInventory(inventory);
+            
+            // Update array lokal
+            transactions = db.getTransactions();
+            
+            renderInventory();
+            renderTransactionHistory();
+            updateStats();
+            updateDivisionReport();
+            
+            // Update hitungan barang keluar hari ini
+            updateTodayCounters();
+            
+            event.target.reset();
+            alert('Barang keluar berhasil dicatat!');
+        }
+
+        // ========== FUNGSI EDIT & HAPUS ==========
+        function editItem(code) {
+            const item = inventory.find(item => item.code === code);
+            if (item) {
+                const newStock = prompt(`Edit stok untuk ${item.name} (saat ini: ${item.stock}):`, item.stock);
+                if (newStock !== null && !isNaN(newStock) && newStock >= 0) {
+                    item.stock = parseInt(newStock);
+                    
+                    // Simpan ke database
+                    db.saveInventory(inventory);
+                    
+                    renderInventory();
+                    updateStats();
+                    alert('Stok berhasil diupdate!');
+                }
+            }
+        }
+
+        function deleteItem(code) {
+            if (confirm('Yakin ingin menghapus barang ini?')) {
+                inventory = inventory.filter(item => item.code !== code);
+                
+                // Simpan ke database
+                db.saveInventory(inventory);
+                
+                renderInventory();
+                updateStats();
+                alert('Barang berhasil dihapus!');
+            }
+        }
+
+        // ========== FUNGSI LAPORAN ==========
+        function generateReport() {
+            const month = document.getElementById('reportMonth').value;
+            const year = document.getElementById('reportYear').value;
+            
+            if (!month || !year) {
+                alert('Pilih bulan dan tahun terlebih dahulu untuk generate laporan PDF!');
+                return;
+            }
+            
+            // Generate PDF content
+            const targetDate = `${year}-${month}`;
+            const monthlyTransactions = transactions.filter(t => t.date && t.date.startsWith(targetDate));
+            
+            const monthNames = {
+                '01': 'Januari', '02': 'Februari', '03': 'Maret', '04': 'April',
+                '05': 'Mei', '06': 'Juni', '07': 'Juli', '08': 'Agustus',
+                '09': 'September', '10': 'Oktober', '11': 'November', '12': 'Desember'
+            };
+            
+            const monthName = monthNames[month];
+            
+            // Calculate statistics
+            const incomingItems = monthlyTransactions.filter(t => t.type === 'Masuk');
+            const outgoingItems = monthlyTransactions.filter(t => t.type === 'Keluar');
+            const totalIn = incomingItems.reduce((sum, t) => sum + t.qty, 0);
+            const totalOut = outgoingItems.reduce((sum, t) => sum + t.qty, 0);
+            
+            // Calculate division usage
+            const divisionUsage = {};
+            outgoingItems.forEach(t => {
+                if (t.division && t.division !== '-') {
+                    divisionUsage[t.division] = (divisionUsage[t.division] || 0) + t.qty;
+                }
+            });
+            
+            // Calculate top items
+            const itemCounts = {};
+            outgoingItems.forEach(t => {
+                const item = inventory.find(i => i.code === t.code);
+                if (item) {
+                    itemCounts[item.name] = (itemCounts[item.name] || 0) + t.qty;
+                }
+            });
+            const topItems = Object.entries(itemCounts).sort(([,a], [,b]) => b - a).slice(0, 10);
+            
+            // Generate HTML content for PDF
+            const pdfContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Laporan Gudang ${monthName} ${year}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
+                        .header { text-align: center; border-bottom: 3px solid #2563eb; padding-bottom: 20px; margin-bottom: 30px; }
+                        .header h1 { color: #2563eb; margin: 0; font-size: 28px; }
+                        .header p { margin: 5px 0; color: #666; }
+                        .section { margin-bottom: 30px; }
+                        .section h2 { color: #2563eb; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; }
+                        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0; }
+                        .stat-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; text-align: center; }
+                        .stat-number { font-size: 24px; font-weight: bold; color: #2563eb; }
+                        .stat-label { color: #64748b; font-size: 14px; margin-top: 5px; }
+                        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                        th, td { border: 1px solid #e2e8f0; padding: 12px; text-align: left; }
+                        th { background-color: #f1f5f9; font-weight: bold; color: #374151; }
+                        tr:nth-child(even) { background-color: #f8fafc; }
+                        .text-center { text-align: center; }
+                        .text-green { color: #059669; }
+                        .text-red { color: #dc2626; }
+                        .text-blue { color: #2563eb; }
+                        .footer { margin-top: 40px; text-align: center; color: #64748b; font-size: 12px; border-top: 1px solid #e2e8f0; padding-top: 20px; }
+                        .division-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 20px 0; }
+                        .division-card { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; padding: 12px; text-align: center; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>📊 LAPORAN GUDANG CENTRAL</h1>
+                        <p><strong>Periode: ${monthName} ${year}</strong></p>
+                        <p>Tanggal Generate: ${new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                    </div>
+
+                    <div class="section">
+                        <h2>📈 Ringkasan Bulanan</h2>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-number text-green">${totalIn}</div>
+                                <div class="stat-label">Total Barang Masuk</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number text-red">${totalOut}</div>
+                                <div class="stat-label">Total Barang Keluar</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number text-blue">${totalIn - totalOut >= 0 ? '+' : ''}${totalIn - totalOut}</div>
+                                <div class="stat-label">Selisih</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">${monthlyTransactions.length}</div>
+                                <div class="stat-label">Total Transaksi</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h2>🏢 Penggunaan Per Divisi</h2>
+                        <div class="division-grid">
+                            ${Object.entries(divisionUsage).map(([division, total]) => `
+                                <div class="division-card">
+                                    <div class="stat-number text-blue">${total}</div>
+                                    <div class="stat-label">${division}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    ${topItems.length > 0 ? `
+                    <div class="section">
+                        <h2>🔥 Top 10 Barang Terlaris</h2>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Nama Barang</th>
+                                    <th class="text-center">Jumlah Keluar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${topItems.map(([name, count], index) => `
+                                    <tr>
+                                        <td class="text-center">${index + 1}</td>
+                                        <td>${name}</td>
+                                        <td class="text-center"><strong>${count} unit</strong></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                    ` : ''}
+
+                    <div class="section">
+                        <h2>📋 Detail Transaksi ${monthName} ${year}</h2>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Tanggal</th>
+                                    <th>Waktu</th>
+                                    <th>Jenis</th>
+                                    <th>Kode Barang</th>
+                                    <th>Jumlah</th>
+                                    <th>Divisi</th>
+                                    <th>Keterangan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${monthlyTransactions.length > 0 ? monthlyTransactions.map(t => `
+                                    <tr>
+                                        <td>${t.date || '-'}</td>
+                                        <td>${t.time}</td>
+                                        <td class="${t.type === 'Masuk' ? 'text-green' : 'text-red'}">${t.type === 'Masuk' ? '📥' : '📤'} ${t.type}</td>
+                                        <td><strong>${t.code}</strong></td>
+                                        <td class="text-center"><strong>${t.qty}</strong></td>
+                                        <td>${t.division || '-'}</td>
+                                        <td>${t.note}</td>
+                                    </tr>
+                                `).join('') : '<tr><td colspan="7" class="text-center">Tidak ada transaksi pada periode ini</td></tr>'}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="section">
+                        <h2>📦 Status Inventory Saat Ini</h2>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Kode</th>
+                                    <th>Nama Barang</th>
+                                    <th>Kategori</th>
+                                    <th class="text-center">Stok</th>
+                                    <th class="text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${inventory.map(item => `
+                                    <tr>
+                                        <td><strong>${item.code}</strong></td>
+                                        <td>${item.name}</td>
+                                        <td>${item.category}</td>
+                                        <td class="text-center"><strong>${item.stock}</strong></td>
+                                        <td class="text-center ${item.stock <= item.minStock ? 'text-red' : 'text-green'}">
+                                            ${item.stock <= item.minStock ? '⚠️ Stok Rendah' : '✅ Normal'}
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="footer">
+                        <p>Laporan ini digenerate otomatis oleh Sistem Manajemen Gudang Central</p>
+                        <p>© ${new Date().getFullYear()} Gudang Central - Sistem Manajemen Inventory</p>
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            // Create and download PDF
+            const blob = new Blob([pdfContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `Laporan-Gudang-${monthName}-${year}.html`;
+            link.click();
+            URL.revokeObjectURL(url);
+            
+            alert(`📄 Laporan PDF untuk ${monthName} ${year} berhasil digenerate!\n\nFile HTML telah didownload dan bisa dibuka di browser, lalu print ke PDF atau save as PDF.`);
+        }
+
+        function generateMonthlyReport() {
+            const month = document.getElementById('reportMonth').value;
+            const year = document.getElementById('reportYear').value;
+            
+            if (!month || !year) {
+                alert('Pilih bulan dan tahun terlebih dahulu!');
+                return;
+            }
+            
+            const targetDate = `${year}-${month}`;
+            const monthlyTransactions = transactions.filter(t => t.date && t.date.startsWith(targetDate));
+            
+            // Hitung statistik
+            const incomingItems = monthlyTransactions.filter(t => t.type === 'Masuk');
+            const outgoingItems = monthlyTransactions.filter(t => t.type === 'Keluar');
+            
+            const totalIn = incomingItems.reduce((sum, t) => sum + t.qty, 0);
+            const totalOut = outgoingItems.reduce((sum, t) => sum + t.qty, 0);
+            const difference = totalIn - totalOut;
+            
+            // Update tampilan statistik
+            const monthlyStats = document.getElementById('monthlyStats');
+            monthlyStats.innerHTML = `
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Total Barang Masuk:</span>
+                    <span class="font-semibold text-green-600">${totalIn} unit</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Total Barang Keluar:</span>
+                    <span class="font-semibold text-red-600">${totalOut} unit</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Selisih:</span>
+                    <span class="font-semibold ${difference >= 0 ? 'text-blue-600' : 'text-red-600'}">${difference >= 0 ? '+' : ''}${difference} unit</span>
+                </div>
+            `;
+            
+            // Hitung barang terlaris
+            const itemCounts = {};
+            outgoingItems.forEach(t => {
+                const item = inventory.find(i => i.code === t.code);
+                if (item) {
+                    const itemName = item.name;
+                    itemCounts[itemName] = (itemCounts[itemName] || 0) + t.qty;
+                }
+            });
+            
+            const sortedItems = Object.entries(itemCounts)
+                .sort(([,a], [,b]) => b - a)
+                .slice(0, 5);
+            
+            const topItems = document.getElementById('topItems');
+            if (sortedItems.length > 0) {
+                topItems.innerHTML = sortedItems.map(([name, count]) => `
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-700">${name}</span>
+                        <span class="bg-purple-200 text-purple-800 px-2 py-1 rounded text-sm">${count} unit</span>
+                    </div>
+                `).join('');
+            } else {
+                topItems.innerHTML = '<div class="text-center text-gray-500 py-4">Tidak ada data barang keluar</div>';
+            }
+            
+            updateDivisionReport();
+        }
+
+        function updateDivisionReport() {
+            const divisionReport = document.getElementById('divisionReport');
+            const divisions = ['Housekeeping', 'Security', 'Back Office', 'Engineering', 'HR', 'Finance'];
+            
+            const divisionData = {};
+            divisions.forEach(div => {
+                divisionData[div] = {
+                    totalItems: 0,
+                    items: {}
+                };
+            });
+            
+            // Hitung penggunaan per divisi
+            transactions.filter(t => t.type === 'Keluar' && t.division && t.division !== '-').forEach(t => {
+                const division = t.division;
+                if (divisionData[division]) {
+                    divisionData[division].totalItems += t.qty;
+                    const item = inventory.find(i => i.code === t.code);
+                    if (item) {
+                        const itemName = item.name;
+                        divisionData[division].items[itemName] = (divisionData[division].items[itemName] || 0) + t.qty;
+                    }
+                }
+            });
+            
+            divisionReport.innerHTML = divisions.map(division => {
+                const data = divisionData[division];
+                const icon = getDivisionIcon(division);
+                const topItem = Object.entries(data.items).sort(([,a], [,b]) => b - a)[0];
+                
+                return `
+                    <div class="bg-white rounded-lg p-4 shadow-md">
+                        <h4 class="font-semibold text-gray-900 mb-2">${icon} ${division}</h4>
+                        <div class="text-2xl font-bold text-blue-600 mb-1">${data.totalItems}</div>
+                        <div class="text-sm text-gray-600 mb-2">Total barang digunakan</div>
+                        ${topItem ? `<div class="text-xs text-gray-500">Terbanyak: ${topItem[0]} (${topItem[1]})</div>` : '<div class="text-xs text-gray-500">Belum ada penggunaan</div>'}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ========== FUNGSI DATABASE MANAGEMENT ==========
+        function exportDatabase() {
+            db.exportData();
+            alert('Database berhasil di-backup! File akan didownload otomatis. 💾');
+        }
+
+        function showImportModal() {
+            document.getElementById('importModal').classList.remove('hidden');
+            document.getElementById('importModal').classList.add('flex');
+        }
+
+        function hideImportModal() {
+            document.getElementById('importModal').classList.add('hidden');
+            document.getElementById('importModal').classList.remove('flex');
+        }
+
+        function importDatabase() {
+            const fileInput = document.getElementById('importFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Pilih file backup terlebih dahulu!');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const jsonData = e.target.result;
+                if (db.importData(jsonData)) {
+                    // Reload data
+                    inventory = db.getInventory();
+                    transactions = db.getTransactions();
+                    
+                    // Refresh tampilan
+                    renderInventory();
+                    renderTransactionHistory();
+                    updateStats();
+                    
+                    hideImportModal();
+                    alert('Database berhasil di-import! 📥');
+                } else {
+                    alert('Gagal import database. Pastikan file backup valid!');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function resetDatabase() {
+            if (confirm('⚠️ PERINGATAN: Ini akan menghapus SEMUA data dan mengembalikan ke data awal. Yakin ingin melanjutkan?')) {
+                if (confirm('Konfirmasi sekali lagi: SEMUA data inventory dan transaksi akan hilang!')) {
+                    db.resetDatabase();
+                    
+                    // Reload data
+                    inventory = db.getInventory();
+                    transactions = db.getTransactions();
+                    
+                    // Refresh tampilan
+                    renderInventory();
+                    renderTransactionHistory();
+                    updateStats();
+                    
+                    alert('Database berhasil direset ke kondisi awal! 🔄');
+                }
+            }
+        }
+
+        // ========== FUNGSI PENCARIAN ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check login status on page load
+            checkLoginStatus();
+            
+            // Add search functionality when app is initialized
+            const searchInput = document.getElementById('searchInventory');
+            if (searchInput) {
+                searchInput.addEventListener('input', function(e) {
+                    const searchTerm = e.target.value.toLowerCase();
+                    const rows = document.querySelectorAll('#inventoryTable tr');
+                    
+                    rows.forEach(row => {
+                        const text = row.textContent.toLowerCase();
+                        row.style.display = text.includes(searchTerm) ? '' : 'none';
+                    });
+                });
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'984094dbb3b338f0',t:'MTc1ODY5OTA3OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
