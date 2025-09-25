@@ -90,7 +90,7 @@
 
 
 
-            <div class="mt-6 text-center">
+            <div class="mt-4 text-center">
                 <p class="text-xs text-gray-500">
                     © 2024 Gudang Central. Sistem Manajemen Inventory.
                 </p>
@@ -263,7 +263,7 @@
                     <div id="inventory" class="section">
                         <div class="flex justify-between items-center mb-6">
                             <h2 class="text-2xl font-bold text-gray-900">📦 Inventory Barang</h2>
-                            <button id="addItemBtn" onclick="showAddItemForm()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                            <button onclick="showAddItemForm()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
                                 + Tambah Barang
                             </button>
                         </div>
@@ -660,53 +660,8 @@
     <script>
         // ========== LOGIN SYSTEM ==========
         const VALID_CREDENTIALS = {
-            // Warehouse Staff - Full Access
-            'ga_warehouse': {
-                password: 'ga_warehouse_epa001',
-                role: 'warehouse',
-                name: 'Staff Warehouse',
-                permissions: ['view_all', 'edit_inventory', 'manage_transactions', 'approve_staff', 'manage_reports']
-            },
-            
-            // Building Manager - Approval Authority
-            'building_manager': {
-                password: 'manager_epa001',
-                role: 'manager',
-                name: 'Building Manager',
-                permissions: ['view_all', 'approve_manager', 'view_reports', 'final_approval']
-            },
-            
-            // Security Division
-            'security_user': {
-                password: 'security_epa001',
-                role: 'security',
-                name: 'Security Division',
-                permissions: ['view_inventory', 'create_request']
-            },
-            
-            // Engineering Division
-            'engineering_user': {
-                password: 'engineering_epa001',
-                role: 'engineering',
-                name: 'Engineering Division',
-                permissions: ['view_inventory', 'create_request']
-            },
-            
-            // Housekeeping Division
-            'housekeeping_user': {
-                password: 'housekeeping_epa001',
-                role: 'housekeeping',
-                name: 'Housekeeping Division',
-                permissions: ['view_inventory', 'create_request']
-            },
-            
-            // Back Office Division
-            'backoffice_user': {
-                password: 'backoffice_epa001',
-                role: 'backoffice',
-                name: 'Back Office Division',
-                permissions: ['view_inventory', 'create_request']
-            }
+            username: 'ga_warehouse',
+            password: 'ga_warehouse_epa001'
         };
 
         function handleLogin(event) {
@@ -718,21 +673,17 @@
             const loginForm = event.target;
             
             // Validate credentials
-            const user = VALID_CREDENTIALS[username];
-            if (user && user.password === password) {
+            if (username === VALID_CREDENTIALS.username && password === VALID_CREDENTIALS.password) {
                 // Success - hide login screen and show main app
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('mainApp').classList.remove('hidden');
                 
-                // Store login status with user info
-                sessionStorage.setItem('isLoggedIn', 'true');
-                sessionStorage.setItem('username', username);
-                sessionStorage.setItem('userRole', user.role);
-                sessionStorage.setItem('userName', user.name);
-                sessionStorage.setItem('userPermissions', JSON.stringify(user.permissions));
-                
                 // Initialize the main application
                 initializeApp();
+                
+                // Store login status
+                sessionStorage.setItem('isLoggedIn', 'true');
+                sessionStorage.setItem('username', username);
                 
             } else {
                 // Error - show error message and shake form
@@ -920,48 +871,10 @@
         }
 
         // Global variables
-        let db, inventory, transactions, itemRequests, currentUser, userPermissions;
-
-        // ========== PERMISSION SYSTEM ==========
-        function hasPermission(permission) {
-            return userPermissions && userPermissions.includes(permission);
-        }
-
-        function getCurrentUserRole() {
-            return sessionStorage.getItem('userRole');
-        }
-
-        function getCurrentUserName() {
-            return sessionStorage.getItem('userName');
-        }
-
-        function isWarehouseStaff() {
-            return getCurrentUserRole() === 'warehouse';
-        }
-
-        function isBuildingManager() {
-            return getCurrentUserRole() === 'manager';
-        }
-
-        function isDivisionUser() {
-            const role = getCurrentUserRole();
-            return ['security', 'engineering', 'housekeeping', 'backoffice'].includes(role);
-        }
+        let db, inventory, transactions, itemRequests;
 
         // ========== INISIALISASI APLIKASI ==========
         function initializeApp() {
-            // Load user permissions
-            userPermissions = JSON.parse(sessionStorage.getItem('userPermissions') || '[]');
-            currentUser = {
-                username: sessionStorage.getItem('username'),
-                role: sessionStorage.getItem('userRole'),
-                name: sessionStorage.getItem('userName'),
-                permissions: userPermissions
-            };
-
-            // Update header with user info
-            document.getElementById('loggedInUser').textContent = `${currentUser.name} (${currentUser.role.toUpperCase()})`;
-            
             // Inisialisasi database
             db = new WarehouseDB();
             
@@ -971,7 +884,6 @@
             itemRequests = db.getItemRequests();
 
             updateCurrentDate();
-            setupUIBasedOnPermissions();
             renderInventory();
             renderTransactionHistory();
             renderItemRequests();
@@ -980,12 +892,8 @@
             updateDivisionReport();
             populateYearOptions();
             
-            // Show default section based on user role
-            if (isBuildingManager()) {
-                showSection('requests'); // Manager fokus ke approval
-            } else {
-                showSection('inventory');
-            }
+            // Show default section
+            showSection('inventory');
         }
 
         // ========== FUNGSI UTILITAS ==========
@@ -1026,81 +934,7 @@
             }
         }
 
-        function setupUIBasedOnPermissions() {
-            // Hide/show navigation buttons based on permissions
-            const navButtons = document.querySelectorAll('main .grid button');
-            
-            navButtons.forEach(button => {
-                const onclick = button.getAttribute('onclick');
-                
-                // Hide buttons based on permissions
-                if (onclick && onclick.includes('transactions') && !hasPermission('manage_transactions')) {
-                    button.style.display = 'none';
-                }
-                if (onclick && onclick.includes('reports') && !hasPermission('manage_reports') && !hasPermission('view_reports')) {
-                    button.style.display = 'none';
-                }
-            });
-
-            // For division users, only show inventory (read-only) and requests
-            if (isDivisionUser()) {
-                // Hide transaction and report buttons
-                navButtons.forEach(button => {
-                    const onclick = button.getAttribute('onclick');
-                    if (onclick && (onclick.includes('transactions') || onclick.includes('reports'))) {
-                        button.style.display = 'none';
-                    }
-                });
-            }
-
-            // Hide add item button for non-warehouse users
-            const addItemBtn = document.getElementById('addItemBtn');
-            if (addItemBtn && !hasPermission('edit_inventory')) {
-                addItemBtn.style.display = 'none';
-            }
-
-            // Hide filter controls for division users (read-only access)
-            if (isDivisionUser()) {
-                const filterControls = document.querySelector('#inventory .mb-6.space-y-4');
-                if (filterControls) {
-                    // Keep search but hide other filters
-                    const filterButtons = filterControls.querySelectorAll('select, button');
-                    filterButtons.forEach(btn => {
-                        if (!btn.id || btn.id !== 'searchInventory') {
-                            btn.style.display = 'none';
-                        }
-                    });
-                }
-            }
-
-            // Add notification badge for building manager
-            if (isBuildingManager()) {
-                updateManagerNotifications();
-            }
-        }
-
         // ========== FUNGSI TAMPILAN DATA ==========
-        function updateManagerNotifications() {
-            if (!isBuildingManager()) return;
-            
-            const pendingManagerApprovals = itemRequests.filter(r => r.status === 'staff_approved').length;
-            
-            // Update requests button with notification badge
-            const requestsButton = document.querySelector('button[onclick="showSection(\'requests\')"]');
-            if (requestsButton && pendingManagerApprovals > 0) {
-                // Remove existing badge
-                const existingBadge = requestsButton.querySelector('.notification-badge');
-                if (existingBadge) existingBadge.remove();
-                
-                // Add new badge
-                const badge = document.createElement('div');
-                badge.className = 'notification-badge absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse';
-                badge.textContent = pendingManagerApprovals;
-                requestsButton.style.position = 'relative';
-                requestsButton.appendChild(badge);
-            }
-        }
-
         function renderInventory() {
             const tbody = document.getElementById('inventoryTable');
             tbody.innerHTML = '';
@@ -1135,12 +969,6 @@
                 const typeInfo = getTypeInfo(item.type);
                 const movementInfo = getMovementInfo(item.movement);
                 
-                // Show action buttons only for warehouse staff
-                const actionButtons = hasPermission('edit_inventory') ? `
-                    <button onclick="editItem('${item.code}')" class="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
-                    <button onclick="deleteItem('${item.code}')" class="text-red-600 hover:text-red-900">Hapus</button>
-                ` : '<span class="text-gray-400 text-sm">Read Only</span>';
-                
                 const row = `
                     <tr class="hover:bg-gray-50">
                         <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">${item.code}</td>
@@ -1162,7 +990,8 @@
                             <span class="px-2 py-1 text-xs font-medium rounded-full ${statusClass}">${status}</span>
                         </td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm">
-                            ${actionButtons}
+                            <button onclick="editItem('${item.code}')" class="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
+                            <button onclick="deleteItem('${item.code}')" class="text-red-600 hover:text-red-900">Hapus</button>
                         </td>
                     </tr>
                 `;
@@ -1820,25 +1649,6 @@
                 option.textContent = `${item.code} - ${item.name} (Stok: ${item.stock})`;
                 itemSelect.appendChild(option);
             });
-
-            // Pre-fill user info for division users
-            if (isDivisionUser()) {
-                document.getElementById('requesterName').value = getCurrentUserName();
-                
-                const divisionSelect = document.getElementById('requesterDivision');
-                const userRole = getCurrentUserRole();
-                const divisionMap = {
-                    'security': 'Security',
-                    'engineering': 'Engineering', 
-                    'housekeeping': 'Housekeeping',
-                    'backoffice': 'Back Office'
-                };
-                
-                if (divisionMap[userRole]) {
-                    divisionSelect.value = divisionMap[userRole];
-                    divisionSelect.disabled = true; // Lock division for division users
-                }
-            }
             
             document.getElementById('newRequestModal').classList.remove('hidden');
             document.getElementById('newRequestModal').classList.add('flex');
@@ -2033,7 +1843,26 @@
                         
                         ${renderApprovalFlow(request)}
                         
-                        ${renderApprovalButtons(request)}
+                        ${request.status === 'pending' || request.status === 'staff_approved' ? `
+                            <div class="flex space-x-2 mt-4">
+                                ${request.status === 'pending' ? `
+                                    <button onclick="approveRequestByStaff('${request.id}')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                        ✅ Setujui (Staff)
+                                    </button>
+                                    <button onclick="rejectRequest('${request.id}')" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                        ❌ Tolak
+                                    </button>
+                                ` : ''}
+                                ${request.status === 'staff_approved' ? `
+                                    <button onclick="approveRequestByManager('${request.id}')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                        ✅ Setujui Final (Manager)
+                                    </button>
+                                    <button onclick="rejectRequest('${request.id}')" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                        ❌ Tolak
+                                    </button>
+                                ` : ''}
+                            </div>
+                        ` : ''}
                     </div>
                 `;
                 
@@ -2139,43 +1968,6 @@
             `;
         }
 
-        function renderApprovalButtons(request) {
-            // Division users can't approve anything
-            if (isDivisionUser()) {
-                return '';
-            }
-
-            // Warehouse staff can approve pending requests
-            if (isWarehouseStaff() && request.status === 'pending') {
-                return `
-                    <div class="flex space-x-2 mt-4">
-                        <button onclick="approveRequestByStaff('${request.id}')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                            ✅ Setujui (Staff)
-                        </button>
-                        <button onclick="rejectRequest('${request.id}')" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                            ❌ Tolak
-                        </button>
-                    </div>
-                `;
-            }
-
-            // Building manager can approve staff-approved requests
-            if (isBuildingManager() && request.status === 'staff_approved') {
-                return `
-                    <div class="flex space-x-2 mt-4">
-                        <button onclick="approveRequestByManager('${request.id}')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                            ✅ Setujui Final (Manager)
-                        </button>
-                        <button onclick="rejectRequest('${request.id}')" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                            ❌ Tolak
-                        </button>
-                    </div>
-                `;
-            }
-
-            return '';
-        }
-
         function filterRequests(status) {
             // Update active filter button
             document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -2198,11 +1990,6 @@
         }
 
         function approveRequestByStaff(requestId) {
-            if (!hasPermission('approve_staff')) {
-                alert('❌ Anda tidak memiliki izin untuk menyetujui permintaan!');
-                return;
-            }
-
             const request = itemRequests.find(r => r.id === requestId);
             if (!request) return;
             
@@ -2210,24 +1997,18 @@
             
             request.status = 'staff_approved';
             request.staffApproval = {
-                approvedBy: getCurrentUserName(),
+                approvedBy: 'Staff Warehouse',
                 approvedAt: new Date().toISOString(),
                 note: note
             };
             
             db.saveItemRequests(itemRequests);
             renderItemRequests();
-            updateManagerNotifications(); // Update notification badge
             
-            alert(`✅ Permintaan ${requestId} telah disetujui oleh Staff Warehouse!\nStatus: Menunggu persetujuan Building Manager\n\n🔔 Notifikasi telah dikirim ke Building Manager`);
+            alert(`✅ Permintaan ${requestId} telah disetujui oleh Staff Warehouse!\nStatus: Menunggu persetujuan Building Manager`);
         }
 
         function approveRequestByManager(requestId) {
-            if (!hasPermission('final_approval')) {
-                alert('❌ Anda tidak memiliki izin untuk persetujuan final!');
-                return;
-            }
-
             const request = itemRequests.find(r => r.id === requestId);
             if (!request) return;
             
@@ -2242,7 +2023,7 @@
             
             request.status = 'approved';
             request.managerApproval = {
-                approvedBy: getCurrentUserName(),
+                approvedBy: 'Building Manager',
                 approvedAt: new Date().toISOString(),
                 note: note
             };
@@ -2276,7 +2057,6 @@
             renderTransactionHistory();
             updateStats();
             updateTodayCounters();
-            updateManagerNotifications(); // Update notification badge
             
             alert(`✅ Permintaan ${requestId} telah DISETUJUI FINAL!\n\n📦 Barang telah dikeluarkan dari gudang\n📋 Transaksi telah dicatat`);
         }
@@ -2444,5 +2224,6 @@
 
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98423bca3740f9b7',t:'MTc1ODcxNjQwMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98472d128314394e',t:'MTc1ODc2ODIyOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
+
